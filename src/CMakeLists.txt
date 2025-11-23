@@ -11,7 +11,7 @@ add_library(TrafficSimLib ${SOURCES} ${HEADERS})
 target_include_directories(TrafficSimLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 # Link Qt modules
-target_link_libraries(TrafficSimLib PRIVATE Qt6::Core Qt6::Widgets Qt6::Gui)
+target_link_libraries(TrafficSimLib PRIVATE Qt6::Core Qt6::Widgets Qt6::Gui Qt6::OpenGL Qt6::OpenGLWidgets)
 
 # Enable Qt features
 set_target_properties(TrafficSimLib PROPERTIES
@@ -24,5 +24,5 @@ set_target_properties(TrafficSimLib PROPERTIES
 # Add executable
 # -------------------------------
 add_executable(TrafficSimApp main.cpp)
-target_link_libraries(TrafficSimApp PRIVATE TrafficSimLib Qt6::Core Qt6::Widgets Qt6::Gui)
+target_link_libraries(TrafficSimApp PRIVATE TrafficSimLib Qt6::Core Qt6::Widgets Qt6::Gui Qt6::OpenGL Qt6::OpenGLWidgets)
 target_include_directories(TrafficSimApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
