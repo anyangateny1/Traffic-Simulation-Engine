@@ -1,0 +1,60 @@
+---
+# Global clang-format configuration
+# This file controls code formatting for all C/C++ projects
+
+# Base style
+BasedOnStyle: LLVM
+
+# Pointer and reference alignment
+# Left: int* ptr, int& ref (attached to type)
+# Right: int *ptr, int &ref (attached to name)  
+# Middle: int * ptr, int & ref (spaced)
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# Keep your preferred pointer style
+DerivePointerAlignment: false
+
+# Basic formatting options
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Braces
+BreakBeforeBraces: Attach
+
+# Spaces
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Function parameters
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackParameters: false
+
+# Other useful settings
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeColon
+IncludeBlocks: Preserve
+IndentCaseLabels: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: None
+SortIncludes: true
+
