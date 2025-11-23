@@ -1,4 +1,5 @@
 #pragma once
+#include "Renderer/Renderer.h"
 #include <QMainWindow>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -10,8 +11,8 @@ class MainWindow : public QMainWindow {
     MainWindow(QWidget* parent = nullptr);
 
   private:
-    QWidget* centralWidget;
-    QVBoxLayout* layout;
-    QPushButton* startButton;
-    QWidget* simulationPanel; // Placeholder for simulation rendering
+    QWidget* centralWidget_;
+    QVBoxLayout* layout_;
+    QPushButton* startButton_;
+    Renderer* renderer_; // Placeholder for simulation rendering
 };

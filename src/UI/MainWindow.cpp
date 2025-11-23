@@ -2,25 +2,23 @@
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     // Create central widget
-    centralWidget = new QWidget(this);
-    setCentralWidget(centralWidget);
+    centralWidget_ = new QWidget(this);
+    setCentralWidget(centralWidget_);
 
     // Create vertical layout
-    layout = new QVBoxLayout(centralWidget);
+    layout_ = new QVBoxLayout(centralWidget_);
 
     // Create simulation panel (just a blank widget for now)
-    simulationPanel = new QWidget(this);
-    simulationPanel->setFixedSize(600, 400);                        // placeholder size
-    simulationPanel->setStyleSheet("background-color: lightgray;"); // visible background
-    layout->addWidget(simulationPanel);
+    renderer_ = new Renderer(this);
+    layout_->addWidget(renderer_);
 
     // Create Start button
-    startButton = new QPushButton("Start Simulation", this);
-    layout->addWidget(startButton);
+    startButton_ = new QPushButton("Start Simulation", this);
+    layout_->addWidget(startButton_);
 
     // Connect button to a placeholder slot (later will start simulation)
-    connect(startButton, &QPushButton::clicked,
-            [this]() { startButton->setText("Simulation Started!"); });
+    connect(startButton_, &QPushButton::clicked,
+            [this]() { startButton_->setText("Simulation Started!"); });
 
     setWindowTitle("Traffic Simulation MVP");
     resize(640, 480);
