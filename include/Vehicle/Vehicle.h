@@ -15,6 +15,8 @@ class Vehicle {
     explicit Vehicle(const Position& pos, const Velocity& vel) noexcept;
     void update(float dt);
 
+    Position getPos() const noexcept { return position_; }
+
   private:
     Position position_;
     Velocity velocity_;
