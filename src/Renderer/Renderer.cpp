@@ -1,4 +1,5 @@
 #include "Renderer/Renderer.h"
+#include "Vehicle/Vehicle.h"
 #include <QMatrix4x4>
 
 const float cubeVertices[] = {-0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f, 0.5f,
@@ -8,16 +9,7 @@ const float cubeVertices[] = {-0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f, 0.
 const unsigned int cubeIndices[] = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 0, 4, 7, 7, 3, 0,
                                     1, 5, 6, 6, 2, 1, 3, 2, 6, 6, 7, 3, 0, 1, 5, 5, 4, 0};
 
-Renderer::Renderer(QWidget* parent) : QOpenGLWidget(parent) {
-    // Create some objects with random velocities
-    for (int i = 0; i < 5; ++i) {
-        objects.push_back({float(i) - 2.0f, 0.0f, 0.0f, 0.01f * (i + 1), 0.0f, 0.0f});
-    }
-
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Renderer::updateAnimation);
-    timer->start(16); // ~60 FPS
-}
+Renderer::Renderer(QWidget* parent) : QOpenGLWidget(parent) {}
 
 Renderer::~Renderer() {
     makeCurrent();
@@ -85,9 +77,11 @@ void Renderer::paintGL() {
     QMatrix4x4 projection;
     projection.perspective(45.0f, float(width()) / height(), 0.1f, 100.0f);
 
-    for (auto& obj : objects) {
+    // Render all vehicles passed from the controller
+    for (const auto* vehicle : vehiclesToRender_) {
         QMatrix4x4 model;
-        model.translate(obj.x, obj.y, obj.z);
+        auto [x, y, z] = vehicle->getPos();
+        model.translate(x, y, z);
         shaderProgram->setUniformValue("model", model);
         shaderProgram->setUniformValue("view", view);
         shaderProgram->setUniformValue("projection", projection);
@@ -100,12 +94,14 @@ void Renderer::paintGL() {
     shaderProgram->release();
 }
 
-void Renderer::updateAnimation() {
-    for (auto& obj : objects) {
-        obj.x += obj.vx;
-        // Bounce back if out of bounds
-        if (obj.x > 2.0f || obj.x < -2.0f)
-            obj.vx = -obj.vx;
+void Renderer::updateFromVehicles(const std::vector<std::unique_ptr<Vehicle>>& vehicles) {
+    vehiclesToRender_.clear();
+
+    vehiclesToRender_.reserve(vehicles.size());
+    for (const auto& vehicle : vehicles) {
+        vehiclesToRender_.push_back(vehicle.get());
     }
+
+    // Trigger a repaint
     update();
 }
