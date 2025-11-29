@@ -11,7 +11,7 @@ add_library(TrafficSimLib ${SOURCES} ${HEADERS})
 target_include_directories(TrafficSimLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 # Link Qt modules
-target_link_libraries(TrafficSimLib PRIVATE Qt6::Core Qt6::Widgets Qt6::Gui Qt6::OpenGL Qt6::OpenGLWidgets)
+target_link_libraries(TrafficSimLib PRIVATE Qt6::Core Qt6::Widgets Qt6::Gui Qt6::OpenGL Qt6::OpenGLWidgets nlohmann_json::nlohmann_json)
 
 # Enable Qt features
 set_target_properties(TrafficSimLib PROPERTIES

@@ -1,5 +1,5 @@
 #include "Renderer/Renderer.h"
-#include "Vehicle/Vehicle.h"
+#include "SimulationEngine/SimulationEngine.h"
 #include <QMatrix4x4>
 
 const float cubeVertices[] = {-0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f, 0.5f,
@@ -17,6 +17,7 @@ Renderer::~Renderer() {
     glDeleteBuffers(1, &EBO);
     glDeleteVertexArrays(1, &VAO);
     delete shaderProgram;
+    delete renderData_;
     doneCurrent();
 }
 
@@ -68,20 +69,24 @@ void Renderer::resizeGL(int w, int h) {
 
 void Renderer::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    if (!renderData_) {
+        return;
+    }
+    
     shaderProgram->bind();
 
-    // Fixed top-down camera
     QMatrix4x4 view;
-    view.lookAt(QVector3D(0, 10, 0), QVector3D(0, 0, 0), QVector3D(0, 0, -1)); // looking down
+    view.lookAt(QVector3D(0, 10, 0), QVector3D(0, 0, 0), QVector3D(0, 0, -1));
 
     QMatrix4x4 projection;
     projection.perspective(45.0f, float(width()) / height(), 0.1f, 100.0f);
 
-    // Render all vehicles passed from the controller
-    for (const auto* vehicle : vehiclesToRender_) {
+    // TODO: Implement road rendering here
+    
+    for (const auto& vehicleInfo : renderData_->vehicles) {
         QMatrix4x4 model;
-        auto [x, y, z] = vehicle->getPos();
-        model.translate(x, y, z);
+        model.translate(vehicleInfo.x, vehicleInfo.y, vehicleInfo.z);
         shaderProgram->setUniformValue("model", model);
         shaderProgram->setUniformValue("view", view);
         shaderProgram->setUniformValue("projection", projection);
@@ -94,14 +99,8 @@ void Renderer::paintGL() {
     shaderProgram->release();
 }
 
-void Renderer::updateFromVehicles(const std::vector<std::unique_ptr<Vehicle>>& vehicles) {
-    vehiclesToRender_.clear();
-
-    vehiclesToRender_.reserve(vehicles.size());
-    for (const auto& vehicle : vehicles) {
-        vehiclesToRender_.push_back(vehicle.get());
-    }
-
-    // Trigger a repaint
+void Renderer::updateFromRenderData(const RenderData& data) {
+    delete renderData_;
+    renderData_ = new RenderData(data);
     update();
 }
