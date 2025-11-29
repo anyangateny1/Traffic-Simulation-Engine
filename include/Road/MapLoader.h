@@ -1,18 +1,12 @@
 #pragma once
-#include "Road/RoadGraph.h"
 #include <string_view>
+
+class RoadGraph;
 
 class MapLoader {
   public:
-    explicit MapLoader(RoadGraph& g) noexcept : graph(g) {}
+    MapLoader() = delete;
 
-    bool loadMapFromJson(std::string_view filename);
-
-    MapLoader(const MapLoader&) = delete;
-    MapLoader(MapLoader&&) = delete;
-    MapLoader& operator=(const MapLoader&) = delete;
-    MapLoader& operator=(MapLoader&&) = delete;
-
-  private:
-    RoadGraph& graph;
+    // Static method: pass the graph to load into
+    static bool LoadMapFromJson(RoadGraph& graph, std::string_view filename);
 };

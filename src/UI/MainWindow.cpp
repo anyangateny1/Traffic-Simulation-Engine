@@ -41,7 +41,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), isRunning_(false)
 
     connect(simulationTimer_, &QTimer::timeout, this, &MainWindow::onSimulationTick);
 
-    renderer_->updateFromVehicles(simulationEngine_->getVehicles());
+    // TODO: Wire up the new RenderData API
+    // renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
 
     setWindowTitle("Traffic Simulation - MVC Architecture");
     resize(800, 600);
@@ -74,11 +75,13 @@ void MainWindow::onPauseClicked() {
 void MainWindow::onStepClicked() {
     simulationEngine_->step();
 
-    renderer_->updateFromVehicles(simulationEngine_->getVehicles());
+    // TODO: Wire up the new RenderData API
+    // renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
 }
 
 void MainWindow::onSimulationTick() {
     simulationEngine_->step();
 
-    renderer_->updateFromVehicles(simulationEngine_->getVehicles());
+    // TODO: Wire up the new RenderData API
+    // renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
 }
