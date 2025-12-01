@@ -22,6 +22,9 @@ class Renderer : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
   private:
     QOpenGLShaderProgram* shaderProgram = nullptr;
     GLuint VAO = 0, VBO = 0, EBO = 0;
+    GLuint lineVAO = 0, lineVBO = 0;
 
     RenderData* renderData_ = nullptr;
+    
+    void updateLineBuffers();
 };

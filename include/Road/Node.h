@@ -10,7 +10,12 @@ class Node {
     Node& operator=(const Node&) = default;
     Node& operator=(Node&&) noexcept = default;
 
-    int id_{};
-    double x_coordinate_{};
-    double y_coordinate_{};
+    int Id() const noexcept { return id_; }
+    double X() const noexcept { return x_coordinate_; }
+    double Y() const noexcept { return y_coordinate_; }
+
+  private:
+    int id_;
+    double x_coordinate_;
+    double y_coordinate_;
 };
