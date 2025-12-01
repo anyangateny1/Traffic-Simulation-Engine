@@ -1,4 +1,5 @@
 #include "SimulationEngine/SimulationEngine.h"
+#include "SimulationEngine/SimulationConfig.h"
 #include "Vehicle/Vehicle.h"
 #include "Road/MapLoader.h"
 #include <iostream>
@@ -11,7 +12,7 @@ SimulationEngine::SimulationEngine() {
     }
 }
 
-void SimulationEngine::LoadMap(const std::string& filepath) {
+void SimulationEngine::LoadMap(std::string_view filepath) {
     if (!MapLoader::LoadMapFromJson(road_graph_, filepath)) {
         std::cerr << "Failed to load map from: " << filepath << "\n";
         throw std::runtime_error("Map loading failed");
@@ -28,7 +29,7 @@ void SimulationEngine::pause() {
 }
 
 void SimulationEngine::step() {
-    const float deltaTime = 0.016f; // ~60 FPS timestep
+    const float deltaTime = SimulationConfig::GetDeltaTimeSeconds();
     for (auto& vehicle : vehicles_) {
         vehicle->update(deltaTime);
     }
@@ -48,16 +49,22 @@ RenderData SimulationEngine::GetRenderData() const {
     const auto& nodes = road_graph_.GetNodes();
     data.nodes.reserve(nodes.size());
     for (const auto& node : nodes) {
-        data.nodes.push_back({node.id_, node.x_coordinate_, node.y_coordinate_});
+        data.nodes.push_back({node.Id(), node.X(), node.Y()});
     }
     
     // Extract road data
     const auto& adjacency = road_graph_.GetAdjacency();
-    for (const auto& road_list : adjacency) {
-        for (const auto& road : road_list) {
+    const auto& all_nodes = road_graph_.GetNodes();
+    
+    for (size_t from_idx = 0; from_idx < adjacency.size(); ++from_idx) {
+        for (const auto& edge : adjacency[from_idx]) {
+            const Road& road = road_graph_.RoadByIndex(edge.road_index);
+            const Node& from_node = all_nodes[from_idx];
+            const Node& to_node = all_nodes[edge.to_node_index];
+            
             data.roads.push_back({
-                road.FromId(),
-                road.ToId(),
+                from_node.Id(),
+                to_node.Id(),
                 road.CurvePoints(),
                 road.Length()
             });

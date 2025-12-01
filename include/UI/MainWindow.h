@@ -1,5 +1,6 @@
 #pragma once
 #include <QMainWindow>
+#include <QString>
 
 class SimulationEngine;
 class Renderer;
@@ -11,8 +12,11 @@ class QTimer;
 class MainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    explicit MainWindow(QWidget* parent = nullptr);
+    explicit MainWindow(const QString& mapFilePath, QWidget* parent = nullptr);
     ~MainWindow();
+
+  protected:
+    void showEvent(QShowEvent* event) override;
 
   private slots:
     void onStartClicked();

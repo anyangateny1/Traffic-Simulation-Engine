@@ -22,6 +22,20 @@ const Node& RoadGraph::NodeById(int id) const {
     return nodes_[it->second];
 }
 
+const Node& RoadGraph::NodeByIndex(size_t index) const {
+    if (index >= nodes_.size()) {
+        throw std::out_of_range("Node index out of range");
+    }
+    return nodes_[index];
+}
+
+const Road& RoadGraph::RoadByIndex(size_t index) const {
+    if (index >= roads_.size()) {
+        throw std::out_of_range("Road index out of range");
+    }
+    return roads_[index];
+}
+
 void RoadGraph::AddRoad(int from_id,
                         int to_id,
                         double true_distance,
@@ -36,5 +50,10 @@ void RoadGraph::AddRoad(int from_id,
     size_t from_index = from_it->second;
     size_t to_index = to_it->second;
 
-    adjacency_[from_index].emplace_back(from_id, to_id, true_distance, curve_points);
+    // Add the road to the roads_ vector
+    size_t road_index = roads_.size();
+    roads_.emplace_back(true_distance, curve_points);
+
+    // Add edge to adjacency list
+    adjacency_[from_index].push_back({to_index, road_index});
 }

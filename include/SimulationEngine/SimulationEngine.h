@@ -2,7 +2,6 @@
 #include "Road/RoadGraph.h"
 #include "Vehicle/Vehicle.h"
 #include <memory>
-#include <string>
 #include <vector>
 
 struct RenderData {
@@ -34,7 +33,7 @@ class SimulationEngine {
     SimulationEngine(const SimulationEngine&) = delete;
     SimulationEngine& operator=(const SimulationEngine&) = delete;
 
-    void LoadMap(const std::string& filepath);
+    void LoadMap(std::string_view filepath);
 
     void start();
     void pause();
