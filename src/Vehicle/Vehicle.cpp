@@ -1,9 +1,18 @@
+#include "Vehicle/Controller.h"
 #include "Vehicle/Vehicle.h"
 
-Vehicle::Vehicle(const VehicleID& id, const Position& pos, const Velocity& vel) noexcept
-    : id_(id), position_(pos), velocity_(vel) {}
+Vehicle::Vehicle(VehicleID id, std::unique_ptr<Controller> controller)
+    : id_(id), controller_(std::move(controller)) {}
 
 void Vehicle::update(float dt) {
-    position_.x += velocity_.vx * dt;
-    position_.y += velocity_.vy * dt;
+    controller_->Tick(*this, dt);
+}
+
+void Vehicle::SetPosition(float x, float y) {
+    x_ = x;
+    y_ = y;
+}
+
+std::pair<float, float> Vehicle::GetPosition() const {
+    return {x_, y_};
 }

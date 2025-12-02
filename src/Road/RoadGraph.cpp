@@ -50,10 +50,13 @@ void RoadGraph::AddRoad(int from_id,
     size_t from_index = from_it->second;
     size_t to_index = to_it->second;
 
-    // Add the road to the roads_ vector
-    size_t road_index = roads_.size();
-    roads_.emplace_back(true_distance, curve_points);
+    const Node& from_node = nodes_[from_index];
+    const Node& to_node = nodes_[to_index];
+    std::pair<double, double> start_point = {from_node.X(), from_node.Y()};
+    std::pair<double, double> end_point = {to_node.X(), to_node.Y()};
 
-    // Add edge to adjacency list
+    size_t road_index = roads_.size();
+    roads_.emplace_back(start_point, end_point, true_distance, curve_points);
+
     adjacency_[from_index].push_back({to_index, road_index});
 }

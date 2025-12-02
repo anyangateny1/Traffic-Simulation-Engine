@@ -38,6 +38,9 @@ class SimulationEngine {
     void start();
     void pause();
     void step();
+    
+    // Spawn a vehicle on a road (by road index)
+    void SpawnVehicle(size_t road_index, double speed = 5.0);
 
     RenderData GetRenderData() const;
 
