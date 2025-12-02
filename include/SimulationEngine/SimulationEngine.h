@@ -6,7 +6,7 @@
 
 struct RenderData {
     struct VehicleRenderInfo {
-        float x, y, z;
+        float x, y;
     };
 
     struct RoadRenderInfo {

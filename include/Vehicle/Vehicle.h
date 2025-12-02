@@ -1,7 +1,7 @@
 #pragma once
 
 struct Position {
-    float x, y, z;
+    float x, y;
 };
 
 struct VehicleID {
@@ -9,7 +9,7 @@ struct VehicleID {
 };
 
 struct Velocity {
-    float vx, vy, vz;
+    float vx, vy;
 };
 
 class Vehicle {
@@ -17,9 +17,10 @@ class Vehicle {
     Vehicle() = delete;
 
     explicit Vehicle(const VehicleID& id, const Position& pos, const Velocity& vel) noexcept;
-    void update(const Position& pos, const Velocity& vel);
+    void update(float dt);
 
     Position getPos() const noexcept { return position_; }
+    VehicleID getId() const noexcept { return id_; }
 
   private:
     VehicleID id_;
