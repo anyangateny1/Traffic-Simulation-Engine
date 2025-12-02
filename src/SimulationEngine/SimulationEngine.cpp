@@ -8,7 +8,7 @@ SimulationEngine::SimulationEngine() {
     // TODO: Fix and have user create engine.
     for (int i = 0; i < 1; i++) {
         vehicles_.emplace_back(
-            std::make_unique<Vehicle>(Position{(float)i, 0, (float)i}, Velocity{0.5f, 0, 0.3f}));
+            std::make_unique<Vehicle>(VehicleID{i}, Position{(float)i * 5.0f, 10.0f}, Velocity{0.5f, 0.3f}));
     }
 }
 
@@ -42,7 +42,7 @@ RenderData SimulationEngine::GetRenderData() const {
     data.vehicles.reserve(vehicles_.size());
     for (const auto& vehicle : vehicles_) {
         auto pos = vehicle->getPos();
-        data.vehicles.push_back({pos.x, pos.y, pos.z});
+        data.vehicles.push_back({pos.x, pos.y});
     }
     
     // Extract node data

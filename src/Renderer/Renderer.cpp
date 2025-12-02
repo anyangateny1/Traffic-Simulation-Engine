@@ -2,12 +2,18 @@
 #include "SimulationEngine/SimulationEngine.h"
 #include <QMatrix4x4>
 
-const float cubeVertices[] = {-0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f, 0.5f,
-                              -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, -0.5f, 0.5f, 0.5f,
-                              -0.5f, 0.5f,  0.5f,  0.5f,  0.5f,  -0.5f, 0.5f, 0.5f};
+// 2D square vertices (centered at origin, 1x1 size)
+const float squareVertices[] = {
+    -0.5f, -0.5f,  // bottom-left
+     0.5f, -0.5f,  // bottom-right
+     0.5f,  0.5f,  // top-right
+    -0.5f,  0.5f   // top-left
+};
 
-const unsigned int cubeIndices[] = {0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 0, 4, 7, 7, 3, 0,
-                                    1, 5, 6, 6, 2, 1, 3, 2, 6, 6, 7, 3, 0, 1, 5, 5, 4, 0};
+const unsigned int squareIndices[] = {
+    0, 1, 2,  // first triangle
+    2, 3, 0   // second triangle
+};
 
 Renderer::Renderer(QWidget* parent) : QOpenGLWidget(parent) {}
 
@@ -25,19 +31,17 @@ Renderer::~Renderer() {
 
 void Renderer::initializeGL() {
     initializeOpenGLFunctions();
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 
     shaderProgram = new QOpenGLShaderProgram();
     shaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
                                            R"(
         #version 330 core
-        layout(location=0) in vec3 aPos;
+        layout(location=0) in vec2 aPos;
         uniform mat4 model;
-        uniform mat4 view;
         uniform mat4 projection;
         void main() {
-            gl_Position = projection * view * model * vec4(aPos,1.0);
+            gl_Position = projection * model * vec4(aPos, 0.0, 1.0);
         })");
     shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
                                            R"(
@@ -55,12 +59,12 @@ void Renderer::initializeGL() {
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(squareIndices), squareIndices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
     glBindVertexArray(0);
@@ -94,19 +98,16 @@ void Renderer::updateLineBuffers() {
         if (fromNode && toNode) {
             // Start point
             lineVertices.push_back(fromNode->x);
-            lineVertices.push_back(0.2f);
             lineVertices.push_back(fromNode->y);
 
             // Curve points
             for (const auto& point : roadInfo.curve_points) {
                 lineVertices.push_back(point.first);
-                lineVertices.push_back(0.2f);
                 lineVertices.push_back(point.second);
             }
 
             // End point
             lineVertices.push_back(toNode->x);
-            lineVertices.push_back(0.2f);
             lineVertices.push_back(toNode->y);
         }
     }
@@ -115,13 +116,13 @@ void Renderer::updateLineBuffers() {
     glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
     glBufferData(GL_ARRAY_BUFFER, lineVertices.size() * sizeof(float), lineVertices.data(),
                  GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 }
 
 void Renderer::paintGL() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     if (!renderData_) {
         return;
@@ -129,32 +130,54 @@ void Renderer::paintGL() {
 
     shaderProgram->bind();
 
-    // Calculate center of all nodes for camera positioning
-    float centerX = 0.0f, centerZ = 0.0f;
+    // Calculate bounds of the scene
+    float minX = 0.0f, maxX = 100.0f, minY = 0.0f, maxY = 100.0f;
     if (!renderData_->nodes.empty()) {
+        minX = maxX = renderData_->nodes[0].x;
+        minY = maxY = renderData_->nodes[0].y;
         for (const auto& node : renderData_->nodes) {
-            centerX += node.x;
-            centerZ += node.y;
+            minX = std::min(minX, static_cast<float>(node.x));
+            maxX = std::max(maxX, static_cast<float>(node.x));
+            minY = std::min(minY, static_cast<float>(node.y));
+            maxY = std::max(maxY, static_cast<float>(node.y));
         }
-        centerX /= renderData_->nodes.size();
-        centerZ /= renderData_->nodes.size();
     }
 
-    // Position camera to look at the center of the map
-    QMatrix4x4 view;
-    float cameraHeight = 50.0f;
-    view.lookAt(QVector3D(centerX, cameraHeight, centerZ + 30), QVector3D(centerX, 0, centerZ),
-                QVector3D(0, 1, 0));
+    // Add padding around the scene
+    float padding = 10.0f;
+    minX -= padding;
+    maxX += padding;
+    minY -= padding;
+    maxY += padding;
 
+    // Setup orthographic projection for 2D view
     QMatrix4x4 projection;
-    projection.perspective(45.0f, float(width()) / height(), 0.1f, 200.0f);
+    float aspectRatio = float(width()) / float(height());
+    float sceneWidth = maxX - minX;
+    float sceneHeight = maxY - minY;
+    float sceneAspect = sceneWidth / sceneHeight;
 
-    shaderProgram->setUniformValue("view", view);
+    if (aspectRatio > sceneAspect) {
+        // Window is wider than scene - fit to height
+        float centerX = (minX + maxX) / 2.0f;
+        float halfHeight = sceneHeight / 2.0f;
+        float halfWidth = halfHeight * aspectRatio;
+        projection.ortho(centerX - halfWidth, centerX + halfWidth,
+                        minY, maxY, -1.0f, 1.0f);
+    } else {
+        // Window is taller than scene - fit to width
+        float centerY = (minY + maxY) / 2.0f;
+        float halfWidth = sceneWidth / 2.0f;
+        float halfHeight = halfWidth / aspectRatio;
+        projection.ortho(minX, maxX,
+                        centerY - halfHeight, centerY + halfHeight, -1.0f, 1.0f);
+    }
+
     shaderProgram->setUniformValue("projection", projection);
 
     // Draw roads as thick lines
-    glLineWidth(8.0f);
-    shaderProgram->setUniformValue("color", QVector3D(0.8f, 0.8f, 0.8f));
+    glLineWidth(4.0f);
+    shaderProgram->setUniformValue("color", QVector3D(0.6f, 0.6f, 0.6f));
     QMatrix4x4 identity;
     shaderProgram->setUniformValue("model", identity);
 
@@ -170,27 +193,28 @@ void Renderer::paintGL() {
 
     glBindVertexArray(0);
 
-    // Draw nodes as cubes
-    shaderProgram->setUniformValue("color", QVector3D(1.0f, 0.3f, 0.3f));
+    // Draw nodes as small squares
+    shaderProgram->setUniformValue("color", QVector3D(1.0f, 0.4f, 0.4f));
     for (const auto& nodeInfo : renderData_->nodes) {
         QMatrix4x4 model;
-        model.translate(nodeInfo.x, 0.0f, nodeInfo.y);
-        model.scale(0.5f);
+        model.translate(nodeInfo.x, nodeInfo.y);
+        model.scale(0.8f);
         shaderProgram->setUniformValue("model", model);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     }
 
-    // Draw vehicles as cubes
-    shaderProgram->setUniformValue("color", QVector3D(0.2f, 0.7f, 1.0f));
+    // Draw vehicles as squares
+    shaderProgram->setUniformValue("color", QVector3D(0.3f, 0.8f, 1.0f));
     for (const auto& vehicleInfo : renderData_->vehicles) {
         QMatrix4x4 model;
-        model.translate(vehicleInfo.x, vehicleInfo.y, vehicleInfo.z);
+        model.translate(vehicleInfo.x, vehicleInfo.y);
+        model.scale(1.2f);
         shaderProgram->setUniformValue("model", model);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     }
 
     glBindVertexArray(0);
