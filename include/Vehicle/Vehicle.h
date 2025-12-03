@@ -9,6 +9,8 @@ struct VehicleID {
 
 class Vehicle {
   public:
+    Vehicle() = delete;
+    Vehicle(const Vehicle& other) = delete;
     Vehicle(VehicleID id, std::unique_ptr<Controller> controller);
 
     void update(float dt);
