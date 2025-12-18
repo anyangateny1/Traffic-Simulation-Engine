@@ -28,7 +28,7 @@ bool MapLoader::LoadMapFromJson(RoadGraph& graph, std::string_view file_path) {
         double x = node_json.at("x").get<double>();
         double y = node_json.at("y").get<double>();
 
-        graph.AddNode(id, x, y);
+        graph.AddNode(id, Position{x, y});
     }
 
     for (const auto& road_json : root["roads"]) {

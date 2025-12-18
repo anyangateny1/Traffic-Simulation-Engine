@@ -7,7 +7,7 @@
 
 struct RenderData {
     struct VehicleRenderInfo {
-        float x, y;
+        Position pos;
     };
 
     struct RoadRenderInfo {
@@ -19,7 +19,7 @@ struct RenderData {
 
     struct NodeRenderInfo {
         int id;
-        double x, y;
+        Position pos;
     };
 
     std::vector<VehicleRenderInfo> vehicles;
@@ -39,7 +39,7 @@ class SimulationEngine {
     void start();
     void pause();
     void step();
-    
+
     // Spawn a vehicle on a road (by road index)
     void SpawnVehicle(size_t road_index, double speed = 5.0);
 

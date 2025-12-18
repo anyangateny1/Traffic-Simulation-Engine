@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <string>
 
-void RoadGraph::AddNode(int id, double x_coord, double y_coord) {
+void RoadGraph::AddNode(int id, const Position& pos) {
     if (id_to_index_.contains(id)) {
         throw std::runtime_error("Duplicate node ID: " + std::to_string(id));
     }
@@ -10,7 +10,7 @@ void RoadGraph::AddNode(int id, double x_coord, double y_coord) {
     size_t index = nodes_.size();
     id_to_index_[id] = index;
 
-    nodes_.emplace_back(id, x_coord, y_coord);
+    nodes_.emplace_back(id, pos);
     adjacency_.emplace_back(); // new empty adjacency list
 }
 
@@ -52,11 +52,9 @@ void RoadGraph::AddRoad(int from_id,
 
     const Node& from_node = nodes_[from_index];
     const Node& to_node = nodes_[to_index];
-    Position start_point = {from_node.X(), from_node.Y()};
-    Position end_point = {to_node.X(), to_node.Y()};
 
     size_t road_index = roads_.size();
-    roads_.emplace_back(start_point, end_point, true_distance, curve_points);
+    roads_.emplace_back(from_node.Pos(), to_node.Pos(), true_distance, curve_points);
 
     adjacency_[from_index].push_back({to_index, road_index});
 }

@@ -1,9 +1,9 @@
 #pragma once
+#include "Geometry/Position.h"
 
 class Node {
   public:
-    explicit Node(int id, double x_coord, double y_coord) noexcept
-        : id_(id), x_coordinate_(x_coord), y_coordinate_(y_coord) {}
+    explicit Node(int id, const Position& coords) noexcept : id_(id), pos_(coords) {}
 
     Node(const Node&) = default;
     Node(Node&&) noexcept = default;
@@ -11,11 +11,9 @@ class Node {
     Node& operator=(Node&&) noexcept = default;
 
     int Id() const noexcept { return id_; }
-    double X() const noexcept { return x_coordinate_; }
-    double Y() const noexcept { return y_coordinate_; }
+    Position Pos() const noexcept { return pos_; }
 
   private:
     int id_;
-    double x_coordinate_;
-    double y_coordinate_;
+    Position pos_;
 };

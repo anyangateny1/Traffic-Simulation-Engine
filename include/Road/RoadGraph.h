@@ -23,7 +23,7 @@ class RoadGraph {
     RoadGraph& operator=(const RoadGraph&) = delete;
     RoadGraph& operator=(RoadGraph&&) = delete;
 
-    void AddNode(int id, double x_coord, double y_coord);
+    void AddNode(int id, const Position& pos);
 
     void AddRoad(int from_id,
                  int to_id,

@@ -97,8 +97,8 @@ void Renderer::updateLineBuffers() {
 
         if (fromNode && toNode) {
             // Start point
-            lineVertices.push_back(fromNode->x);
-            lineVertices.push_back(fromNode->y);
+            lineVertices.push_back(fromNode->pos.x_coord);
+            lineVertices.push_back(fromNode->pos.y_coord);
 
             // Curve points
             for (const auto& point : roadInfo.curve_points) {
@@ -107,8 +107,8 @@ void Renderer::updateLineBuffers() {
             }
 
             // End point
-            lineVertices.push_back(toNode->x);
-            lineVertices.push_back(toNode->y);
+            lineVertices.push_back(toNode->pos.x_coord);
+            lineVertices.push_back(toNode->pos.y_coord);
         }
     }
 
@@ -133,13 +133,13 @@ void Renderer::paintGL() {
     // Calculate bounds of the scene
     float minX = 0.0f, maxX = 100.0f, minY = 0.0f, maxY = 100.0f;
     if (!renderData_->nodes.empty()) {
-        minX = maxX = renderData_->nodes[0].x;
-        minY = maxY = renderData_->nodes[0].y;
+        minX = maxX = static_cast<float>(renderData_->nodes[0].pos.x_coord);
+        minY = maxY = static_cast<float>(renderData_->nodes[0].pos.y_coord);
         for (const auto& node : renderData_->nodes) {
-            minX = std::min(minX, static_cast<float>(node.x));
-            maxX = std::max(maxX, static_cast<float>(node.x));
-            minY = std::min(minY, static_cast<float>(node.y));
-            maxY = std::max(maxY, static_cast<float>(node.y));
+            minX = std::min(minX, static_cast<float>(node.pos.x_coord));
+            maxX = std::max(maxX, static_cast<float>(node.pos.x_coord));
+            minY = std::min(minY, static_cast<float>(node.pos.y_coord));
+            maxY = std::max(maxY, static_cast<float>(node.pos.y_coord));
         }
     }
 
@@ -197,7 +197,7 @@ void Renderer::paintGL() {
     shaderProgram->setUniformValue("color", QVector3D(1.0f, 0.4f, 0.4f));
     for (const auto& nodeInfo : renderData_->nodes) {
         QMatrix4x4 model;
-        model.translate(nodeInfo.x, nodeInfo.y);
+        model.translate(nodeInfo.pos.x_coord, nodeInfo.pos.y_coord);
         model.scale(0.8f);
         shaderProgram->setUniformValue("model", model);
 
@@ -209,7 +209,7 @@ void Renderer::paintGL() {
     shaderProgram->setUniformValue("color", QVector3D(0.3f, 0.8f, 1.0f));
     for (const auto& vehicleInfo : renderData_->vehicles) {
         QMatrix4x4 model;
-        model.translate(vehicleInfo.x, vehicleInfo.y);
+        model.translate(vehicleInfo.pos.x_coord, vehicleInfo.pos.y_coord);
         model.scale(1.2f);
         shaderProgram->setUniformValue("model", model);
 

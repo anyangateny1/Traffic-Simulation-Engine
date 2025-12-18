@@ -50,15 +50,14 @@ RenderData SimulationEngine::GetRenderData() const {
     // Extract vehicle data
     data.vehicles.reserve(vehicles_.size());
     for (const auto& vehicle : vehicles_) {
-        auto [x, y] = vehicle->GetPosition();
-        data.vehicles.push_back({static_cast<float>(x), static_cast<float>(y)});
+        data.vehicles.emplace_back(vehicle->GetPosition());
     }
 
     // Extract node data
     const auto& nodes = road_graph_.GetNodes();
     data.nodes.reserve(nodes.size());
     for (const auto& node : nodes) {
-        data.nodes.push_back({node.Id(), node.X(), node.Y()});
+        data.nodes.push_back({node.Id(), node.Pos()});
     }
 
     // Extract road data
