@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Geometry/Position.h"
 #include "Road/Node.h"
 #include "Road/Road.h"
 
@@ -27,7 +28,7 @@ class RoadGraph {
     void AddRoad(int from_id,
                  int to_id,
                  double true_distance,
-                 const std::vector<std::pair<double, double>>& curve_points);
+                 const std::vector<Position>& curve_points);
 
     const Node& NodeById(int id) const;
     const Node& NodeByIndex(size_t index) const;

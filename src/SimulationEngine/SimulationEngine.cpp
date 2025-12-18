@@ -21,7 +21,7 @@ void SimulationEngine::SpawnVehicle(size_t road_index, double speed) {
         std::cerr << "Invalid road index: " << road_index << "\n";
         return;
     }
-    Road* road = const_cast<Road*>(&road_graph_.RoadByIndex(road_index));
+    Road& road = const_cast<Road&>(road_graph_.RoadByIndex(road_index));
 
     auto controller = std::make_unique<VehicleController>(road, speed);
     int vehicle_id = static_cast<int>(vehicles_.size());
@@ -51,7 +51,7 @@ RenderData SimulationEngine::GetRenderData() const {
     data.vehicles.reserve(vehicles_.size());
     for (const auto& vehicle : vehicles_) {
         auto [x, y] = vehicle->GetPosition();
-        data.vehicles.push_back({x, y});
+        data.vehicles.push_back({static_cast<float>(x), static_cast<float>(y)});
     }
 
     // Extract node data

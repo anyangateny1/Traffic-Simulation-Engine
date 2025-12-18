@@ -1,26 +1,39 @@
 #pragma once
+#include "Geometry/Position.h"
 #include <vector>
 
 class Vehicle;
+class Road;
 
 enum class LaneDirection {
-    Forward = 1,  // start→end
-    Backward = -1 // end→start
+    Forward = 1,  // start→ end
+    Backward = -1 // end→ start
 };
 
 class Lane {
-  private:
-    int lane_index;
-    LaneDirection direction; // Which way traffic flows
-
-    std::vector<Vehicle*> vehicles;
-
   public:
-    explicit Lane(int index, LaneDirection dir = LaneDirection::Forward)
-        : lane_index(index), direction(dir) {}
+    Lane(Road* parent, int index, LaneDirection dir, double offset, double width);
 
-    int DirectionMultiplier() const noexcept { return static_cast<int>(direction); }
+    Position GetPositionAtDistance(double distance) const;
+    Position GetHeadingAtDistance(double distance) const;
 
-    bool IsForward() const noexcept { return direction == LaneDirection::Forward; }
-    bool IsBackward() const noexcept { return direction == LaneDirection::Backward; }
+    double Length() const;
+
+    int Index() const noexcept { return lane_index_; }
+    LaneDirection Direction() const noexcept { return direction_; }
+    double Offset() const noexcept { return lateral_offset_; }
+    double Width() const noexcept { return width_; }
+    Road* ParentRoad() const noexcept { return parent_road_; }
+
+    void AddVehicle(Vehicle* v);
+    void RemoveVehicle(Vehicle* v);
+    const std::vector<Vehicle*>& Vehicles() const { return vehicles_; }
+
+  private:
+    Road* parent_road_;
+    int lane_index_;
+    LaneDirection direction_;
+    double lateral_offset_; // Positive = left of centerline, Negative = right
+    double width_;
+    std::vector<Vehicle*> vehicles_; // Sorted by distance
 };

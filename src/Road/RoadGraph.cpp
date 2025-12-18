@@ -39,7 +39,7 @@ const Road& RoadGraph::RoadByIndex(size_t index) const {
 void RoadGraph::AddRoad(int from_id,
                         int to_id,
                         double true_distance,
-                        const std::vector<std::pair<double, double>>& curve_points) {
+                        const std::vector<Position>& curve_points) {
     auto from_it = id_to_index_.find(from_id);
     auto to_it = id_to_index_.find(to_id);
 
@@ -52,8 +52,8 @@ void RoadGraph::AddRoad(int from_id,
 
     const Node& from_node = nodes_[from_index];
     const Node& to_node = nodes_[to_index];
-    std::pair<double, double> start_point = {from_node.X(), from_node.Y()};
-    std::pair<double, double> end_point = {to_node.X(), to_node.Y()};
+    Position start_point = {from_node.X(), from_node.Y()};
+    Position end_point = {to_node.X(), to_node.Y()};
 
     size_t road_index = roads_.size();
     roads_.emplace_back(start_point, end_point, true_distance, curve_points);

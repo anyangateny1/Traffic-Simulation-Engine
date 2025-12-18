@@ -1,28 +1,29 @@
 #pragma once
-#include "Vehicle/Controller.h"
+#include "Geometry/Position.h"
 #include <memory>
-#include <utility>
 
 struct VehicleID {
     int id;
 };
 
+class Controller;
+
 class Vehicle {
   public:
     Vehicle() = delete;
-    Vehicle(const Vehicle& other) = delete;
+    Vehicle(const Vehicle&) = delete;
     Vehicle(VehicleID id, std::unique_ptr<Controller> controller);
+    ~Vehicle();
 
     void update(float dt);
 
     VehicleID getId() const noexcept { return id_; }
 
-    void SetPosition(float x, float y);
-    std::pair<float, float> GetPosition() const;
+    void SetPosition(Position p) noexcept { pos_ = p; }
+    const Position& GetPosition() const noexcept { return pos_; }
 
   private:
     VehicleID id_;
     std::unique_ptr<Controller> controller_;
-    float x_{0.0f};
-    float y_{0.0f};
+    Position pos_;
 };

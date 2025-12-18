@@ -9,8 +9,7 @@ void VehicleController::Tick(Vehicle& vehicle, float dt) {
         return;
 
     distance_ += speed_ * dt;
-    auto [x, y] = road_->GetPositionAtDistance(distance_);
-    vehicle.SetPosition(static_cast<float>(x), static_cast<float>(y));
+    vehicle.SetPosition(road_->GetPositionAtDistance(distance_));
 }
 
 void VehicleController::SetNextRoad(Road& road) {

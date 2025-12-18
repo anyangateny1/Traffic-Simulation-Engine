@@ -102,8 +102,8 @@ void Renderer::updateLineBuffers() {
 
             // Curve points
             for (const auto& point : roadInfo.curve_points) {
-                lineVertices.push_back(point.first);
-                lineVertices.push_back(point.second);
+                lineVertices.push_back(point.x_coord);
+                lineVertices.push_back(point.y_coord);
             }
 
             // End point

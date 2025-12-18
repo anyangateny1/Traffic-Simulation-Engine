@@ -1,4 +1,5 @@
 #include "Road/MapLoader.h"
+#include "Geometry/Position.h"
 #include "Road/RoadGraph.h"
 
 #include <fstream>
@@ -35,9 +36,9 @@ bool MapLoader::LoadMapFromJson(RoadGraph& graph, std::string_view file_path) {
         int to_id = road_json.at("to").get<int>();
         double distance = road_json.at("distance").get<double>();
 
-        std::vector<std::pair<double, double>> curve_points;
+        std::vector<Position> curve_points;
         for (const auto& p : road_json["curve_points"]) {
-            curve_points.emplace_back(p[0].get<double>(), p[1].get<double>());
+            curve_points.push_back({p[0].get<double>(), p[1].get<double>()});
         }
 
         graph.AddRoad(from_id, to_id, distance, curve_points);
