@@ -1,4 +1,6 @@
 #include "Road/RoadGraph.h"
+#include <memory>
+#include <span>
 #include <stdexcept>
 #include <string>
 
@@ -33,13 +35,14 @@ const Road& RoadGraph::RoadByIndex(size_t index) const {
     if (index >= roads_.size()) {
         throw std::out_of_range("Road index out of range");
     }
-    return roads_[index];
+    return *roads_[index];
 }
 
 void RoadGraph::AddRoad(int from_id,
                         int to_id,
                         double true_distance,
-                        const std::vector<Position>& curve_points) {
+                        std::vector<Position> curve_points,
+                        std::span<const LaneConfig> lane_configs) {
     auto from_it = id_to_index_.find(from_id);
     auto to_it = id_to_index_.find(to_id);
 
@@ -54,7 +57,8 @@ void RoadGraph::AddRoad(int from_id,
     const Node& to_node = nodes_[to_index];
 
     size_t road_index = roads_.size();
-    roads_.emplace_back(from_node.Pos(), to_node.Pos(), true_distance, curve_points);
+    roads_.push_back(std::make_unique<Road>(
+        from_node.Pos(), to_node.Pos(), true_distance, std::move(curve_points), lane_configs));
 
     adjacency_[from_index].push_back({to_index, road_index});
 }

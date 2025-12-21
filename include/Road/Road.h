@@ -1,6 +1,8 @@
 #pragma once
 #include "Geometry/Position.h"
+#include "Road/Lane.h"
 #include <cmath>
+#include <span>
 #include <utility>
 #include <vector>
 
@@ -9,14 +11,20 @@ class Road {
     Road(Position start_point,
          Position end_point,
          double length,
-         std::vector<Position> curve_points)
+         std::vector<Position> curve_points,
+         std::span<const LaneConfig> lane_configs)
         : start_point_(start_point), end_point_(end_point), length_(length),
-          curve_points_(std::move(curve_points)) {}
+          curve_points_(std::move(curve_points)) {
+        int index = 0;
+        for (const auto& cfg : lane_configs) {
+            lanes_.emplace_back(this, index++, cfg.dir, cfg.offset, cfg.width);
+        }
+    }
 
-    Road(const Road&) = default;
-    Road(Road&&) noexcept = default;
-    Road& operator=(const Road&) = default;
-    Road& operator=(Road&&) noexcept = default;
+    Road(const Road&) = delete;
+    Road(Road&&) = delete;
+    Road& operator=(const Road&) = delete;
+    Road& operator=(Road&&) = delete;
 
     double Length() const noexcept { return length_; }
 
@@ -29,6 +37,7 @@ class Road {
     const Position GetPositionAtDistance(double distance) const;
 
   private:
+    std::vector<Lane> lanes_;
     Position start_point_;
     Position end_point_;
     double length_;

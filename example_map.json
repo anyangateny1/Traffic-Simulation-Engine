@@ -7,14 +7,26 @@
   ],
   "roads": [
     {
-      "from": 0, "to": 1,
+      "id": 0,
+      "from": 0,
+      "to": 1,
       "distance": 300,
-      "curve_points": []
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1,  "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m":  1.75, "width_m": 3.5 }
+      ]
     },
     {
-      "from": 2, "to": 3,
+      "id": 1,
+      "from": 2,
+      "to": 3,
       "distance": 300,
-      "curve_points": []
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1,  "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m":  1.75, "width_m": 3.5 }
+      ]
     }
   ]
 }

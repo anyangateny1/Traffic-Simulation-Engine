@@ -10,6 +10,12 @@ enum class LaneDirection {
     Backward = -1 // end→ start
 };
 
+struct LaneConfig {
+    LaneDirection dir;
+    double offset;
+    double width;
+};
+
 class Lane {
   public:
     Lane(Road* parent, int index, LaneDirection dir, double offset, double width);
@@ -33,7 +39,7 @@ class Lane {
     Road* parent_road_;
     int lane_index_;
     LaneDirection direction_;
-    double lateral_offset_; // Positive = left of centerline, Negative = right
+    double lateral_offset_;
     double width_;
-    std::vector<Vehicle*> vehicles_; // Sorted by distance
+    std::vector<Vehicle*> vehicles_;
 };
