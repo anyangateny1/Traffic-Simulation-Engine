@@ -57,8 +57,8 @@ void RoadGraph::AddRoad(int from_id,
     const Node& to_node = nodes_[to_index];
 
     size_t road_index = roads_.size();
-    roads_.push_back(std::make_unique<Road>(
-        from_node.Pos(), to_node.Pos(), true_distance, std::move(curve_points), lane_configs));
+    roads_.push_back(std::make_unique<Road>(from_node.Pos(), to_node.Pos(), true_distance,
+                                            std::move(curve_points), lane_configs));
 
     adjacency_[from_index].push_back({to_index, road_index});
 }

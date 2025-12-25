@@ -9,13 +9,13 @@ class VehicleController : public Controller {
     void Tick(Vehicle& vehicle, float dt) override;
 
     VehicleController() = delete;
-    explicit VehicleController(Road& road, double speed = 5.0);
+    explicit VehicleController(const Road& road, double speed = 5.0);
 
-    void SetNextRoad(Road& road);
-    bool IsAtEndOfRoad() const;
+    void SetNextRoad(const Road& road) noexcept;
+    bool IsAtEndOfRoad() const noexcept;
 
   private:
     double distance_{0.0};
     double speed_{5.0};
-    Road* road_;
+    const Road* road_;
 };

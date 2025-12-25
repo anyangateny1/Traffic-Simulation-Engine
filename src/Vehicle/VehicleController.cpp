@@ -2,7 +2,7 @@
 #include "Vehicle/Vehicle.h"
 #include "Vehicle/VehicleController.h"
 
-VehicleController::VehicleController(Road& road, double speed) : road_(&road), speed_(speed) {}
+VehicleController::VehicleController(const Road& road, double speed) : road_(road), speed_(speed) {}
 
 void VehicleController::Tick(Vehicle& vehicle, float dt) {
     if (!road_)
@@ -12,12 +12,12 @@ void VehicleController::Tick(Vehicle& vehicle, float dt) {
     vehicle.SetPosition(road_->GetPositionAtDistance(distance_));
 }
 
-void VehicleController::SetNextRoad(Road& road) {
+void VehicleController::SetNextRoad(const Road& road) noexcept {
     road_ = &road;
     distance_ = 0.0;
 }
 
-bool VehicleController::IsAtEndOfRoad() const {
+bool VehicleController::IsAtEndOfRoad() const noexcept {
     if (!road_)
         return true;
     return distance_ >= road_->Length();

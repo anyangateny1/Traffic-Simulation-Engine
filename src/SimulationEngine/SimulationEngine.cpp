@@ -21,8 +21,7 @@ void SimulationEngine::SpawnVehicle(size_t road_index, double speed) {
         std::cerr << "Invalid road index: " << road_index << "\n";
         return;
     }
-    Road& road = const_cast<Road&>(road_graph_.RoadByIndex(road_index));
-
+    const Road& road = road_graph_.RoadByIndex(road_index);
     auto controller = std::make_unique<VehicleController>(road, speed);
     int vehicle_id = static_cast<int>(vehicles_.size());
 
