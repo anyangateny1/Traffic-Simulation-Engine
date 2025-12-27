@@ -1,12 +1,13 @@
+#include "Identifiers/IDs.h"
 #include "Road/RoadGraph.h"
 #include <memory>
 #include <span>
 #include <stdexcept>
 #include <string>
 
-void RoadGraph::AddNode(int id, const Position& pos) {
+void RoadGraph::AddNode(NodeID id, const Position& pos) {
     if (id_to_index_.contains(id)) {
-        throw std::runtime_error("Duplicate node ID: " + std::to_string(id));
+        throw std::runtime_error("Duplicate node ID: " + std::to_string(id.value()));
     }
 
     size_t index = nodes_.size();
@@ -16,10 +17,10 @@ void RoadGraph::AddNode(int id, const Position& pos) {
     adjacency_.emplace_back(); // new empty adjacency list
 }
 
-const Node& RoadGraph::NodeById(int id) const {
+const Node& RoadGraph::NodeById(NodeID id) const {
     auto it = id_to_index_.find(id);
     if (it == id_to_index_.end()) {
-        throw std::runtime_error("Node ID not found: " + std::to_string(id));
+        throw std::runtime_error("Node ID not found: " + std::to_string(id.value()));
     }
     return nodes_[it->second];
 }
@@ -38,8 +39,8 @@ const Road& RoadGraph::RoadByIndex(size_t index) const {
     return *roads_[index];
 }
 
-void RoadGraph::AddRoad(int from_id,
-                        int to_id,
+void RoadGraph::AddRoad(NodeID from_id,
+                        NodeID to_id,
                         double true_distance,
                         std::vector<Position> curve_points,
                         std::span<const LaneConfig> lane_configs) {
@@ -57,8 +58,9 @@ void RoadGraph::AddRoad(int from_id,
     const Node& to_node = nodes_[to_index];
 
     size_t road_index = roads_.size();
-    roads_.push_back(std::make_unique<Road>(from_node.Pos(), to_node.Pos(), true_distance,
+    auto road_id = RoadID(static_cast<RoadID::value_type>(road_index));
+    roads_.push_back(std::make_unique<Road>(road_id, from_node.Pos(), to_node.Pos(), true_distance,
                                             std::move(curve_points), lane_configs));
 
-    adjacency_[from_index].push_back({to_index, road_index});
+    adjacency_[from_index].push_back(RoadEdge{to_index, road_index});
 }

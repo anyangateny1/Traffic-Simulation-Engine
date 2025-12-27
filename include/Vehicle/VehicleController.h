@@ -1,5 +1,6 @@
 #pragma once
 #include "Controller.h"
+#include "Road/Lane.h"
 
 class Road; // Forward declaration
 
@@ -17,5 +18,5 @@ class VehicleController : public Controller {
   private:
     double distance_{0.0};
     double speed_{5.0};
-    const Road* road_;
+    const Lane* lane_;
 };

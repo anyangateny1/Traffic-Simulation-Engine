@@ -23,9 +23,9 @@ void SimulationEngine::SpawnVehicle(size_t road_index, double speed) {
     }
     const Road& road = road_graph_.RoadByIndex(road_index);
     auto controller = std::make_unique<VehicleController>(road, speed);
-    int vehicle_id = static_cast<int>(vehicles_.size());
+    auto vehicle_id = static_cast<VehicleID::value_type>(vehicles_.size());
 
-    vehicles_.emplace_back(std::make_unique<Vehicle>(VehicleID{vehicle_id}, std::move(controller)));
+    vehicles_.emplace_back(std::make_unique<Vehicle>(VehicleID(vehicle_id), std::move(controller)));
 }
 
 void SimulationEngine::start() {

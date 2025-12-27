@@ -1,4 +1,5 @@
 #include "Geometry/Position.h"
+#include "Identifiers/IDs.h"
 #include "Road/Lane.h"
 #include "Road/MapLoader.h"
 #include "Road/RoadGraph.h"
@@ -25,7 +26,7 @@ bool MapLoader::LoadMapFromJson(RoadGraph& graph, std::string_view file_path) {
     }
 
     for (const auto& node_json : root["nodes"]) {
-        int id = node_json.at("id").get<int>();
+        auto id = NodeID(node_json.at("id").get<NodeID::value_type>());
         double x = node_json.at("x").get<double>();
         double y = node_json.at("y").get<double>();
 
@@ -33,8 +34,8 @@ bool MapLoader::LoadMapFromJson(RoadGraph& graph, std::string_view file_path) {
     }
 
     for (const auto& road_json : root["roads"]) {
-        int from_id = road_json.at("from").get<int>();
-        int to_id = road_json.at("to").get<int>();
+        auto from_id = NodeID(road_json.at("from").get<NodeID::value_type>());
+        auto to_id = NodeID(road_json.at("to").get<NodeID::value_type>());
         double distance = road_json.at("distance").get<double>();
 
         const auto& curve_json = road_json["curve_points"];

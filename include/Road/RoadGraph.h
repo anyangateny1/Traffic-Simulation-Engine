@@ -25,15 +25,15 @@ class RoadGraph {
     RoadGraph& operator=(const RoadGraph&) = delete;
     RoadGraph& operator=(RoadGraph&&) = delete;
 
-    void AddNode(int id, const Position& pos);
+    void AddNode(NodeID id, const Position& pos);
 
-    void AddRoad(int from_id,
-                 int to_id,
+    void AddRoad(NodeID from_id,
+                 NodeID to_id,
                  double true_distance,
                  std::vector<Position> curve_points,
                  std::span<const LaneConfig> lane_configs);
 
-    const Node& NodeById(int id) const;
+    const Node& NodeById(NodeID id) const;
     const Node& NodeByIndex(size_t index) const;
 
     const Road& RoadByIndex(size_t index) const;
@@ -51,5 +51,5 @@ class RoadGraph {
     std::vector<std::vector<RoadEdge>> adjacency_;
 
     // Maps user-defined IDs to indices in nodes_
-    std::unordered_map<int, size_t> id_to_index_;
+    std::unordered_map<NodeID, size_t> id_to_index_;
 };

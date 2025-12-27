@@ -1,5 +1,6 @@
 #pragma once
 #include "Geometry/Position.h"
+#include "Identifiers/IDs.h"
 #include "Road/RoadGraph.h"
 #include "Vehicle/Vehicle.h"
 #include <memory>
@@ -11,14 +12,14 @@ struct RenderData {
     };
 
     struct RoadRenderInfo {
-        int from_id;
-        int to_id;
+        NodeID from_id;
+        NodeID to_id;
         std::vector<Position> curve_points;
         double length;
     };
 
     struct NodeRenderInfo {
-        int id;
+        NodeID id;
         Position pos;
     };
 
