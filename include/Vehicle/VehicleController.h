@@ -1,21 +1,20 @@
 #pragma once
 #include "Controller.h"
+#include "Road/Lane.h"
+#include "Route/Route.h"
 
 class Road; // Forward declaration
 
 class VehicleController : public Controller {
   public:
-    ~VehicleController() override = default;
+    explicit VehicleController(std::unique_ptr<Route>, double speed = 5.0);
     void Tick(Vehicle& vehicle, float dt) override;
 
+    // deleted constructors
+    ~VehicleController() override = default;
     VehicleController() = delete;
-    explicit VehicleController(const Road& road, double speed = 5.0);
-
-    void SetNextRoad(const Road& road) noexcept;
-    bool IsAtEndOfRoad() const noexcept;
 
   private:
-    double distance_{0.0};
+    std::unique_ptr<Route> route_;
     double speed_{5.0};
-    const Road* road_;
 };

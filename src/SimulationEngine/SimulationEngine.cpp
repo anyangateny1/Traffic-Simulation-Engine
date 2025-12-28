@@ -1,4 +1,5 @@
 #include "Road/MapLoader.h"
+#include "Route/Route.h"
 #include "SimulationEngine/SimulationConfig.h"
 #include "SimulationEngine/SimulationEngine.h"
 #include "Vehicle/Vehicle.h"
@@ -13,12 +14,12 @@ void SimulationEngine::LoadMap(std::string_view filepath) {
         throw std::runtime_error("Map loading failed");
     }
     std::cout << "Successfully loaded map with " << road_graph_.NodeCount() << " nodes\n";
-    SpawnVehicle(RoadID(0), 5.0);
+    SpawnVehicle(NodeID(0), NodeID(1), RoadID(0), 5.0);
 }
 
-void SimulationEngine::SpawnVehicle(RoadID road_id, double speed) {
-    const Road& road = road_graph_.RoadById(road_id);
-    auto controller = std::make_unique<VehicleController>(road, speed);
+void SimulationEngine::SpawnVehicle(NodeID from, NodeID to, RoadID road, double speed) {
+    auto route = std::make_unique<Route>(road_graph_, from, to, road);
+    auto controller = std::make_unique<VehicleController>(std::move(route), speed);
     auto vehicle_id = VehicleID(static_cast<VehicleID::value_type>(vehicles_.size()));
 
     vehicles_.emplace_back(std::make_unique<Vehicle>(vehicle_id, std::move(controller)));
@@ -61,7 +62,8 @@ RenderData SimulationEngine::GetRenderData() const {
     for (const auto& [from_node_id, edges] : adjacency) {
         for (const auto& edge : edges) {
             const Road& road = road_graph_.RoadById(edge.road_id);
-            data.roads.push_back({from_node_id, edge.to_node_id, road.CurvePoints(), road.Length()});
+            data.roads.push_back(
+                {from_node_id, edge.to_node_id, road.CurvePoints(), road.Length()});
         }
     }
 
