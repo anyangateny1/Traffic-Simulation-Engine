@@ -1,5 +1,6 @@
 #pragma once
 #include "Geometry/Position.h"
+#include "Identifiers/IDs.h"
 #include <vector>
 
 class Vehicle;
@@ -18,18 +19,20 @@ struct LaneConfig {
 
 class Lane {
   public:
-    Lane(Road* parent, int index, LaneDirection dir, double offset, double width);
+    Lane(Road* parent, LaneID id, LaneDirection dir, double offset, double width);
 
     Position GetPositionAtDistance(double distance) const;
     Position GetHeadingAtDistance(double distance) const;
 
-    double Length() const;
 
-    int Index() const noexcept { return lane_index_; }
+    LaneID Id() const noexcept { return id_; }
     LaneDirection Direction() const noexcept { return direction_; }
     double Offset() const noexcept { return lateral_offset_; }
     double Width() const noexcept { return width_; }
     Road* ParentRoad() const noexcept { return parent_road_; }
+    bool IsAtEndOfLane(double distance) const noexcept { return distance == Length(); }
+
+    double Length() const;
 
     void AddVehicle(Vehicle* v);
     void RemoveVehicle(Vehicle* v);
@@ -37,7 +40,7 @@ class Lane {
 
   private:
     Road* parent_road_;
-    int lane_index_;
+    LaneID id_;
     LaneDirection direction_;
     double lateral_offset_;
     double width_;

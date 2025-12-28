@@ -1,5 +1,6 @@
 #pragma once
 #include "Geometry/Position.h"
+#include "Identifiers/IDs.h"
 #include "Road/Lane.h"
 #include <cmath>
 #include <span>
@@ -8,16 +9,17 @@
 
 class Road {
   public:
-    Road(Position start_point,
+    Road(RoadID id,
+         Position start_point,
          Position end_point,
          double length,
          std::vector<Position> curve_points,
          std::span<const LaneConfig> lane_configs)
-        : start_point_(start_point), end_point_(end_point), length_(length),
+        : id_(id), start_point_(start_point), end_point_(end_point), length_(length),
           curve_points_(std::move(curve_points)) {
-        int index = 0;
+        LaneID::value_type index = 0;
         for (const auto& cfg : lane_configs) {
-            lanes_.emplace_back(this, index++, cfg.dir, cfg.offset, cfg.width);
+            lanes_.emplace_back(this, LaneID(index++), cfg.dir, cfg.offset, cfg.width);
         }
     }
 
@@ -26,6 +28,7 @@ class Road {
     Road& operator=(const Road&) = delete;
     Road& operator=(Road&&) = delete;
 
+    RoadID Id() const noexcept { return id_; }
     double Length() const noexcept { return length_; }
 
     const Position& StartPoint() const noexcept { return start_point_; }
@@ -36,7 +39,11 @@ class Road {
     // Returns the (x, y) position at a given distance along the road
     const Position GetPositionAtDistance(double distance) const;
 
+    const Lane& GetDefaultLane() const { return lanes_.at(0); }
+    Lane& GetDefaultLane() { return lanes_.at(0); }
+
   private:
+    RoadID id_;
     std::vector<Lane> lanes_;
     Position start_point_;
     Position end_point_;

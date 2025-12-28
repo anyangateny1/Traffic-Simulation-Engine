@@ -1,10 +1,7 @@
 #pragma once
 #include "Geometry/Position.h"
+#include "Identifiers/IDs.h"
 #include <memory>
-
-struct VehicleID {
-    int id;
-};
 
 class Controller;
 

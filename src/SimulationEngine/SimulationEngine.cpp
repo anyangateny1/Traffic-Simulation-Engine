@@ -13,19 +13,15 @@ void SimulationEngine::LoadMap(std::string_view filepath) {
         throw std::runtime_error("Map loading failed");
     }
     std::cout << "Successfully loaded map with " << road_graph_.NodeCount() << " nodes\n";
-    SpawnVehicle(0, 5.0);
+    SpawnVehicle(RoadID(0), 5.0);
 }
 
-void SimulationEngine::SpawnVehicle(size_t road_index, double speed) {
-    if (road_index >= road_graph_.RoadCount()) {
-        std::cerr << "Invalid road index: " << road_index << "\n";
-        return;
-    }
-    const Road& road = road_graph_.RoadByIndex(road_index);
+void SimulationEngine::SpawnVehicle(RoadID road_id, double speed) {
+    const Road& road = road_graph_.RoadById(road_id);
     auto controller = std::make_unique<VehicleController>(road, speed);
-    int vehicle_id = static_cast<int>(vehicles_.size());
+    auto vehicle_id = VehicleID(static_cast<VehicleID::value_type>(vehicles_.size()));
 
-    vehicles_.emplace_back(std::make_unique<Vehicle>(VehicleID{vehicle_id}, std::move(controller)));
+    vehicles_.emplace_back(std::make_unique<Vehicle>(vehicle_id, std::move(controller)));
 }
 
 void SimulationEngine::start() {
@@ -61,15 +57,11 @@ RenderData SimulationEngine::GetRenderData() const {
 
     // Extract road data
     const auto& adjacency = road_graph_.GetAdjacency();
-    const auto& all_nodes = road_graph_.GetNodes();
 
-    for (size_t from_idx = 0; from_idx < adjacency.size(); ++from_idx) {
-        for (const auto& edge : adjacency[from_idx]) {
-            const Road& road = road_graph_.RoadByIndex(edge.road_index);
-            const Node& from_node = all_nodes[from_idx];
-            const Node& to_node = all_nodes[edge.to_node_index];
-
-            data.roads.push_back({from_node.Id(), to_node.Id(), road.CurvePoints(), road.Length()});
+    for (const auto& [from_node_id, edges] : adjacency) {
+        for (const auto& edge : edges) {
+            const Road& road = road_graph_.RoadById(edge.road_id);
+            data.roads.push_back({from_node_id, edge.to_node_id, road.CurvePoints(), road.Length()});
         }
     }
 

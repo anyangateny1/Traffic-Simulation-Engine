@@ -12,8 +12,8 @@
 
 // Stores an edge in the adjacency list
 struct RoadEdge {
-    size_t to_node_index; // Index of the destination node
-    size_t road_index;    // Index into the roads_ vector
+    NodeID to_node_id;
+    RoadID road_id;
 };
 
 class RoadGraph {
@@ -25,31 +25,29 @@ class RoadGraph {
     RoadGraph& operator=(const RoadGraph&) = delete;
     RoadGraph& operator=(RoadGraph&&) = delete;
 
-    void AddNode(int id, const Position& pos);
+    void AddNode(NodeID id, const Position& pos);
 
-    void AddRoad(int from_id,
-                 int to_id,
+    void AddRoad(NodeID from_id,
+                 NodeID to_id,
                  double true_distance,
                  std::vector<Position> curve_points,
                  std::span<const LaneConfig> lane_configs);
 
-    const Node& NodeById(int id) const;
-    const Node& NodeByIndex(size_t index) const;
-
-    const Road& RoadByIndex(size_t index) const;
+    const Node& NodeById(NodeID id) const;
+    const Road& RoadById(RoadID id) const;
 
     size_t NodeCount() const noexcept { return nodes_.size(); }
     size_t RoadCount() const noexcept { return roads_.size(); }
 
     const std::vector<Node>& GetNodes() const noexcept { return nodes_; }
-    const std::vector<std::unique_ptr<Road>>& GetRoads() const noexcept { return roads_; }
-    const std::vector<std::vector<RoadEdge>>& GetAdjacency() const noexcept { return adjacency_; }
+    const std::unordered_map<RoadID, std::unique_ptr<Road>>& GetRoads() const noexcept { return roads_; }
+    const std::unordered_map<NodeID, std::vector<RoadEdge>>& GetAdjacency() const noexcept { return adjacency_; }
 
   private:
     std::vector<Node> nodes_;
-    std::vector<std::unique_ptr<Road>> roads_;
-    std::vector<std::vector<RoadEdge>> adjacency_;
+    std::unordered_map<RoadID, std::unique_ptr<Road>> roads_;
+    std::unordered_map<NodeID, std::vector<RoadEdge>> adjacency_;
 
-    // Maps user-defined IDs to indices in nodes_
-    std::unordered_map<int, size_t> id_to_index_;
+    // Maps user-defined NodeIDs to indices in nodes_ vector
+    std::unordered_map<NodeID, size_t> node_id_to_index_;
 };
