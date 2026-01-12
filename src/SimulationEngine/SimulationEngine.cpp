@@ -29,17 +29,19 @@ void SimulationEngine::SpawnVehicle(NodeID from, NodeID to, double speed) {
 }
 
 void SimulationEngine::Start() {
-    // TODO: Start the simulation - could set a running flag here if needed
+    paused_ = false;
 }
 
 void SimulationEngine::Pause() {
-    // TODO: Pause the simulation - could set a paused flag here if needed
+    paused_ = true;
 }
 
 void SimulationEngine::Step() {
-    const float deltaTime = SimulationConfig::GetDeltaTimeSeconds();
-    for (auto& vehicle : vehicles_) {
-        vehicle->update(deltaTime);
+    if (!paused_) {
+        const float deltaTime = SimulationConfig::GetDeltaTimeSeconds();
+        for (auto& vehicle : vehicles_) {
+            vehicle->update(deltaTime);
+        }
     }
 }
 

@@ -53,5 +53,7 @@ class SimulationEngine {
     RoadGraph road_graph_;
     std::vector<std::unique_ptr<Vehicle>> vehicles_;
 
+    bool paused_{false};
+
     std::unique_ptr<Pathfinder> path_finder_;
 };
