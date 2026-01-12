@@ -1,6 +1,6 @@
 #include "Renderer/Renderer.h"
-#include "SimulationEngine/SimulationEngine.h"
 #include "SimulationEngine/SimulationConfig.h"
+#include "SimulationEngine/SimulationEngine.h"
 #include "UI/MainWindow.h"
 #include <QHBoxLayout>
 #include <QMessageBox>
@@ -10,7 +10,8 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent) : QMainWindow(parent), isRunning_(false) {
+MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent)
+    : QMainWindow(parent), isRunning_(false) {
     centralWidget_ = new QWidget(this);
     setCentralWidget(centralWidget_);
     layout_ = new QVBoxLayout(centralWidget_);
@@ -35,7 +36,8 @@ MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent) : QMainWindo
     try {
         simulationEngine_->LoadMap(mapFilePath.toStdString());
     } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Map Loading Error", QString("Failed to load map: %1").arg(e.what()));
+        QMessageBox::critical(this, "Map Loading Error",
+                              QString("Failed to load map: %1").arg(e.what()));
         throw;
     }
 
@@ -69,7 +71,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::onStartClicked() {
-    simulationEngine_->start();
+    simulationEngine_->Start();
     isRunning_ = true;
 
     simulationTimer_->start();
@@ -79,7 +81,7 @@ void MainWindow::onStartClicked() {
 }
 
 void MainWindow::onPauseClicked() {
-    simulationEngine_->pause();
+    simulationEngine_->Pause();
     isRunning_ = false;
 
     simulationTimer_->stop();
@@ -89,11 +91,11 @@ void MainWindow::onPauseClicked() {
 }
 
 void MainWindow::onStepClicked() {
-    simulationEngine_->step();
+    simulationEngine_->Step();
     renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
 }
 
 void MainWindow::onSimulationTick() {
-    simulationEngine_->step();
+    simulationEngine_->Step();
     renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
 }

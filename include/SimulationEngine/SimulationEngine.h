@@ -1,6 +1,7 @@
 #pragma once
 #include "Geometry/Position.h"
 #include "Identifiers/IDs.h"
+#include "Pathfinding/Pathfinder.h"
 #include "Road/RoadGraph.h"
 #include "Vehicle/Vehicle.h"
 #include <memory>
@@ -37,12 +38,12 @@ class SimulationEngine {
 
     void LoadMap(std::string_view filepath);
 
-    void start();
-    void pause();
-    void step();
+    void Start();
+    void Pause();
+    void Step();
 
     // Spawn a vehicle on a specific road between two nodes
-    void SpawnVehicle(NodeID from, NodeID to, RoadID road, double speed = 5.0);
+    void SpawnVehicle(NodeID from, NodeID to, double speed = 5.0);
 
     RenderData GetRenderData() const;
 
@@ -51,4 +52,6 @@ class SimulationEngine {
   private:
     RoadGraph road_graph_;
     std::vector<std::unique_ptr<Vehicle>> vehicles_;
+
+    std::unique_ptr<Pathfinder> path_finder_;
 };

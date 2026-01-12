@@ -1,3 +1,4 @@
+#include "Pathfinding/Dijkstra.h"
 #include "Road/MapLoader.h"
 #include "Route/Route.h"
 #include "SimulationEngine/SimulationConfig.h"
@@ -13,27 +14,29 @@ void SimulationEngine::LoadMap(std::string_view filepath) {
         std::cerr << "Failed to load map from: " << filepath << "\n";
         throw std::runtime_error("Map loading failed");
     }
+    path_finder_ = std::make_unique<Dijkstra>(road_graph_);
     std::cout << "Successfully loaded map with " << road_graph_.NodeCount() << " nodes\n";
-    SpawnVehicle(NodeID(0), NodeID(1), RoadID(0), 5.0);
+    SpawnVehicle(NodeID(0), NodeID(7), 30.0);
 }
 
-void SimulationEngine::SpawnVehicle(NodeID from, NodeID to, RoadID road, double speed) {
-    auto route = std::make_unique<Route>(road_graph_, from, to, road);
+void SimulationEngine::SpawnVehicle(NodeID from, NodeID to, double speed) {
+    Path path = path_finder_->FindPath(from, to);
+    auto route = std::make_unique<Route>(road_graph_, path);
     auto controller = std::make_unique<VehicleController>(std::move(route), speed);
     auto vehicle_id = VehicleID(static_cast<VehicleID::value_type>(vehicles_.size()));
 
     vehicles_.emplace_back(std::make_unique<Vehicle>(vehicle_id, std::move(controller)));
 }
 
-void SimulationEngine::start() {
+void SimulationEngine::Start() {
     // TODO: Start the simulation - could set a running flag here if needed
 }
 
-void SimulationEngine::pause() {
+void SimulationEngine::Pause() {
     // TODO: Pause the simulation - could set a paused flag here if needed
 }
 
-void SimulationEngine::step() {
+void SimulationEngine::Step() {
     const float deltaTime = SimulationConfig::GetDeltaTimeSeconds();
     for (auto& vehicle : vehicles_) {
         vehicle->update(deltaTime);
