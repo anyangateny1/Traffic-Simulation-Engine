@@ -1,40 +1,46 @@
-#include <Route/Route.h>
-#include <print>
+#include "Geometry/Position.h"
+#include "Road/RoadGraph.h"
+#include "Route/Route.h"
+#include <stdexcept>
 
-const Position Route::Advance(double delta) {
-    double remaining = delta;
+Route::Route(const RoadGraph& graph, const Path& path)
+    : graph_(graph), roads_(path.roads), currentRoadIndex_(0), distanceAlongRoad_(0.0) {
+    if (roads_.empty()) {
+        currentRoad_ = nullptr;
+        currentLane_ = nullptr;
+    } else {
+        currentRoad_ = &graph_.RoadById(roads_.front());
+        currentLane_ = &currentRoad_->GetDefaultLane();
+    }
+}
 
-    while (remaining > 0.0) {
-        double laneRemaining = currentLane_->Length() - distance_;
+Position Route::Advance(double delta) {
+    if (IsFinished()) {
+        return finalPosition_;
+    }
 
-        if (remaining < laneRemaining) {
-            distance_ += remaining;
-            remaining = 0.0;
-        } else {
-            remaining -= laneRemaining;
-            distance_ = 0.0;
+    distanceAlongRoad_ += delta;
 
-            ChooseNextRoad();
+    // Keep moving to next road if delta goes past current road
+    while (distanceAlongRoad_ > currentRoad_->Length()) {
+        distanceAlongRoad_ -= currentRoad_->Length();
+        finalPosition_ = currentRoad_->EndPoint();
+        MoveToNextRoad();
+        if (IsFinished()) {
+            return finalPosition_;
         }
     }
 
-    return currentLane_->GetPositionAtDistance(distance_);
+    return currentLane_->GetPositionAtDistance(distanceAlongRoad_);
 }
 
-void Route::ChooseNextRoad() {
-    const auto& adjacency = graph_.GetAdjacency();
-
-    auto it = adjacency.find(destinationNode_);
-    if (it == adjacency.end() || it->second.empty()) {
-        throw std::runtime_error("No outgoing roads from node");
+void Route::MoveToNextRoad() {
+    currentRoadIndex_++;
+    if (currentRoadIndex_ < roads_.size()) {
+        currentRoad_ = &graph_.RoadById(roads_[currentRoadIndex_]);
+        currentLane_ = &currentRoad_->GetDefaultLane();
+    } else {
+        currentRoad_ = nullptr;
+        currentLane_ = nullptr;
     }
-
-    // TODO: Currently picks first available road
-    const RoadEdge& edge = it->second.back();
-    std::print("to_node={}, road={}", edge.to_node_id.value(), edge.road_id.value());
-
-    currentNode_ = destinationNode_;
-    destinationNode_ = edge.to_node_id;
-    currentRoad_ = &graph_.RoadById(edge.road_id);
-    currentLane_ = &currentRoad_->GetDefaultLane();
 }

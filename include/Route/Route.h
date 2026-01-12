@@ -1,24 +1,29 @@
 #pragma once
 
+#include "Pathfinding/Path.h"
 #include "Road/Lane.h"
 #include "Road/Road.h"
 #include "Road/RoadGraph.h"
 
+#include <vector>
+
 class Route {
   public:
-    Route(const RoadGraph& graph, NodeID startNode, NodeID destNode, RoadID startRoad)
-        : graph_(graph), currentNode_(startNode), destinationNode_(destNode),
-          currentRoad_(&graph.RoadById(startRoad)),
-          currentLane_(&currentRoad_->GetDefaultLane()), distance_(0.0) {}
+    Route(const RoadGraph& graph, const Path& path);
 
-    const Position Advance(double delta);
-    void ChooseNextRoad();
+    Position Advance(double delta);
+
+    void MoveToNextRoad();
+
+    bool IsFinished() const noexcept { return currentRoadIndex_ >= roads_.size(); }
 
   private:
     const RoadGraph& graph_;
-    NodeID currentNode_;
-    NodeID destinationNode_;
+
+    std::vector<RoadID> roads_; // Precomputed path
+    size_t currentRoadIndex_;   // Current road in the path
     const Road* currentRoad_;
     const Lane* currentLane_;
-    double distance_{};
+    double distanceAlongRoad_;
+    Position finalPosition_;    // Cached endpoint when route finishes
 };
