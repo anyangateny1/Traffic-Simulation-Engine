@@ -1,0 +1,206 @@
+{
+  "nodes": [
+    { "id": 0, "x": 100, "y": 100 },
+    { "id": 1, "x": 300, "y": 100 },
+    { "id": 2, "x": 500, "y": 100 },
+    { "id": 3, "x": 100, "y": 300 },
+    { "id": 4, "x": 300, "y": 300 },
+    { "id": 5, "x": 500, "y": 300 },
+    { "id": 6, "x": 100, "y": 500 },
+    { "id": 7, "x": 300, "y": 500 },
+    { "id": 8, "x": 500, "y": 500 },
+    { "id": 9, "x": 700, "y": 200 },
+    { "id": 10, "x": 700, "y": 400 }
+  ],
+  "roads": [
+    {
+      "id": 0,
+      "from": 0,
+      "to": 1,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 1,
+      "from": 1,
+      "to": 2,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 2,
+      "from": 0,
+      "to": 3,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 3,
+      "from": 1,
+      "to": 4,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 4,
+      "from": 2,
+      "to": 5,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 5,
+      "from": 3,
+      "to": 4,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 6,
+      "from": 4,
+      "to": 5,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 7,
+      "from": 3,
+      "to": 6,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 8,
+      "from": 4,
+      "to": 7,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 9,
+      "from": 5,
+      "to": 8,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 10,
+      "from": 6,
+      "to": 7,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 11,
+      "from": 7,
+      "to": 8,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 12,
+      "from": 2,
+      "to": 9,
+      "distance": 224,
+      "curve_points": [[550, 100], [600, 120], [650, 160], [700, 200]],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 13,
+      "from": 9,
+      "to": 10,
+      "distance": 200,
+      "curve_points": [],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 14,
+      "from": 10,
+      "to": 8,
+      "distance": 283,
+      "curve_points": [[700, 400], [650, 440], [600, 470], [550, 490], [500, 500]],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 15,
+      "from": 5,
+      "to": 9,
+      "distance": 224,
+      "curve_points": [[500, 300], [550, 280], [600, 250], [650, 220], [700, 200]],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    },
+    {
+      "id": 16,
+      "from": 5,
+      "to": 10,
+      "distance": 224,
+      "curve_points": [[500, 300], [550, 320], [600, 350], [650, 380], [700, 400]],
+      "lanes": [
+        { "dir": 1, "offset_m": -1.75, "width_m": 3.5 },
+        { "dir": -1, "offset_m": 1.75, "width_m": 3.5 }
+      ]
+    }
+  ]
+}
+
+
