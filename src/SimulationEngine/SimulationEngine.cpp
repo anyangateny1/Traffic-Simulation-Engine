@@ -29,19 +29,21 @@ void SimulationEngine::SpawnVehicle(NodeID from, NodeID to, double speed) {
 }
 
 void SimulationEngine::Start() {
-    paused_ = false;
+    SetState(SimState::RUNNING);
 }
 
 void SimulationEngine::Pause() {
-    paused_ = true;
+    SetState(SimState::PAUSED);
 }
 
 void SimulationEngine::Step() {
-    if (!paused_) {
-        const float deltaTime = SimulationConfig::GetDeltaTimeSeconds();
-        for (auto& vehicle : vehicles_) {
-            vehicle->update(deltaTime);
-        }
+    if (state_ != SimState::RUNNING) {
+        return;
+    }
+
+    const float deltaTime = SimulationConfig::GetDeltaTimeSeconds();
+    for (auto& vehicle : vehicles_) {
+        vehicle->update(deltaTime);
     }
 }
 
@@ -73,4 +75,19 @@ RenderData SimulationEngine::GetRenderData() const {
     }
 
     return data;
+}
+
+SimState SimulationEngine::State() const {
+    return state_;
+}
+bool SimulationEngine::SetState(SimState new_state) noexcept {
+    if (state_ == new_state) {
+        return false;
+    }
+    state_ = new_state;
+    return true;
+}
+
+const std::vector<std::unique_ptr<Vehicle>>& SimulationEngine::getVehicles() const noexcept {
+    return vehicles_;
 }

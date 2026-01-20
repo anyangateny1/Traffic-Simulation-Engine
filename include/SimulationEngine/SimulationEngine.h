@@ -3,6 +3,7 @@
 #include "Identifiers/IDs.h"
 #include "Pathfinding/Pathfinder.h"
 #include "Road/RoadGraph.h"
+#include "SimulationEngine/SimState.h"
 #include "Vehicle/Vehicle.h"
 #include <memory>
 #include <vector>
@@ -47,13 +48,16 @@ class SimulationEngine {
 
     RenderData GetRenderData() const;
 
-    const std::vector<std::unique_ptr<Vehicle>>& getVehicles() const noexcept { return vehicles_; }
+    SimState State() const;
+    bool SetState(SimState new_state) noexcept;
+
+    const std::vector<std::unique_ptr<Vehicle>>& getVehicles() const noexcept;
 
   private:
     RoadGraph road_graph_;
     std::vector<std::unique_ptr<Vehicle>> vehicles_;
 
-    bool paused_{false};
+    SimState state_{SimState::STOPPED};
 
     std::unique_ptr<Pathfinder> path_finder_;
 };
