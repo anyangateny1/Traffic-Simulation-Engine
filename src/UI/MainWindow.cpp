@@ -1,5 +1,6 @@
 #include "Renderer/Renderer.h"
 #include "SimulationEngine/SimulationConfig.h"
+#include "SimulationEngine/SimulationController.h"
 #include "SimulationEngine/SimulationEngine.h"
 #include "UI/MainWindow.h"
 #include <QHBoxLayout>
@@ -11,7 +12,7 @@
 #include <QWidget>
 
 MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent)
-    : QMainWindow(parent), isRunning_(false) {
+    : QMainWindow(parent) {
     centralWidget_ = new QWidget(this);
     setCentralWidget(centralWidget_);
     layout_ = new QVBoxLayout(centralWidget_);
@@ -41,6 +42,8 @@ MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent)
         throw;
     }
 
+    simulationController_ = new SimulationController(*simulationEngine_);
+
     renderer_ = new Renderer(this);
     layout_->addWidget(renderer_);
 
@@ -52,6 +55,8 @@ MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent)
     connect(stepButton_, &QPushButton::clicked, this, &MainWindow::onStepClicked);
 
     connect(simulationTimer_, &QTimer::timeout, this, &MainWindow::onSimulationTick);
+    connect(simulationController_, &SimulationController::stateChanged,
+            this, &MainWindow::onSimulationStateChanged);
 
     setWindowTitle("Traffic Simulation");
     resize(800, 600);
@@ -67,35 +72,40 @@ void MainWindow::showEvent(QShowEvent* event) {
 }
 
 MainWindow::~MainWindow() {
+    delete simulationController_;
     delete simulationEngine_;
 }
 
 void MainWindow::onStartClicked() {
-    simulationEngine_->Start();
-    isRunning_ = true;
-
-    simulationTimer_->start();
-
-    startButton_->setEnabled(false);
-    pauseButton_->setEnabled(true);
+    simulationController_->start();
 }
 
 void MainWindow::onPauseClicked() {
-    simulationEngine_->Pause();
-    isRunning_ = false;
-
-    simulationTimer_->stop();
-
-    startButton_->setEnabled(true);
-    pauseButton_->setEnabled(false);
+    simulationController_->pause();
 }
 
 void MainWindow::onStepClicked() {
-    simulationEngine_->Step();
+    simulationController_->step();
     renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
 }
 
 void MainWindow::onSimulationTick() {
-    simulationEngine_->Step();
+    simulationController_->step();
     renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
+}
+
+void MainWindow::onSimulationStateChanged(SimState state) {
+    switch (state) {
+        case SimState::RUNNING:
+            simulationTimer_->start();
+            startButton_->setEnabled(false);
+            pauseButton_->setEnabled(true);
+            break;
+        case SimState::PAUSED:
+        case SimState::STOPPED:
+            simulationTimer_->stop();
+            startButton_->setEnabled(true);
+            pauseButton_->setEnabled(false);
+            break;
+    }
 }

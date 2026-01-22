@@ -1,8 +1,10 @@
 #pragma once
+#include "SimulationEngine/SimState.h"
 #include <QMainWindow>
 #include <QString>
 
 class SimulationEngine;
+class SimulationController;
 class Renderer;
 class QPushButton;
 class QVBoxLayout;
@@ -23,6 +25,7 @@ class MainWindow : public QMainWindow {
     void onPauseClicked();
     void onStepClicked();
     void onSimulationTick();
+    void onSimulationStateChanged(SimState state);
 
   private:
     QWidget* centralWidget_;
@@ -32,8 +35,7 @@ class MainWindow : public QMainWindow {
     QPushButton* stepButton_;
 
     SimulationEngine* simulationEngine_;
+    SimulationController* simulationController_;
     Renderer* renderer_;
     QTimer* simulationTimer_;
-
-    bool isRunning_;
 };

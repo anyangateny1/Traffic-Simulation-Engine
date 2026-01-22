@@ -1,5 +1,6 @@
+#pragma once
 #include "SimulationEngine/SimState.h"
-#include <qobject.h>
+#include <QObject>
 
 class SimulationEngine;
 
