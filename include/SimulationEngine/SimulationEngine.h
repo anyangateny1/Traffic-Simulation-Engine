@@ -5,6 +5,7 @@
 #include "Road/RoadGraph.h"
 #include "SimulationEngine/SimState.h"
 #include "Vehicle/Vehicle.h"
+#include <filesystem>
 #include <memory>
 #include <vector>
 
@@ -37,7 +38,7 @@ class SimulationEngine {
     SimulationEngine(const SimulationEngine&) = delete;
     SimulationEngine& operator=(const SimulationEngine&) = delete;
 
-    void LoadMap(std::string_view filepath);
+    void LoadMap(const std::filesystem::path& mapFilePath);
 
     void Start();
     void Pause();

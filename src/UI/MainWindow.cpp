@@ -10,8 +10,9 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <filesystem>
 
-MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent)
+MainWindow::MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent)
     : QMainWindow(parent) {
     centralWidget_ = new QWidget(this);
     setCentralWidget(centralWidget_);
@@ -35,7 +36,7 @@ MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent)
     simulationEngine_ = new SimulationEngine();
 
     try {
-        simulationEngine_->LoadMap(mapFilePath.toStdString());
+        simulationEngine_->LoadMap(mapFilePath);
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Map Loading Error",
                               QString("Failed to load map: %1").arg(e.what()));
@@ -55,8 +56,8 @@ MainWindow::MainWindow(const QString& mapFilePath, QWidget* parent)
     connect(stepButton_, &QPushButton::clicked, this, &MainWindow::onStepClicked);
 
     connect(simulationTimer_, &QTimer::timeout, this, &MainWindow::onSimulationTick);
-    connect(simulationController_, &SimulationController::stateChanged,
-            this, &MainWindow::onSimulationStateChanged);
+    connect(simulationController_, &SimulationController::stateChanged, this,
+            &MainWindow::onSimulationStateChanged);
 
     setWindowTitle("Traffic Simulation");
     resize(800, 600);

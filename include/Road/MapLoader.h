@@ -1,5 +1,5 @@
 #pragma once
-#include <string_view>
+#include <filesystem>
 
 class RoadGraph;
 
@@ -8,5 +8,5 @@ class MapLoader {
     MapLoader() = delete;
 
     // Static method: pass the graph to load into
-    static bool LoadMapFromJson(RoadGraph& graph, std::string_view filename);
+    static bool LoadMapFromJson(RoadGraph& graph, const std::filesystem::path& filename);
 };

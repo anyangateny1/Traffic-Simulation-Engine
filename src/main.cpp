@@ -1,8 +1,19 @@
 #include "UI/MainWindow.h"
+
 #include <QApplication>
 #include <QMessageBox>
 #include <QSurfaceFormat>
+
+#include <algorithm>
+#include <filesystem>
 #include <iostream>
+
+namespace {
+void ShowUsageError(const char* programName, const QString& message) {
+    std::cerr << "Usage: " << programName << " <path/to/map.json>\n";
+    QMessageBox::critical(nullptr, "Error", message);
+}
+} // namespace
 
 int main(int argc, char* argv[]) {
     QSurfaceFormat format;
@@ -15,12 +26,34 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
     if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <path/to/map.json>\n";
-        QMessageBox::critical(nullptr, "Error", "Please provide a map file path as argument.\n\nUsage: ./TrafficSimApp <path/to/map.json>");
+        ShowUsageError(argv[0], "Please provide a map file path as argument.\n\n"
+                                "Usage: ./TrafficSimApp <path/to/map.json>");
         return 1;
     }
 
-    QString mapFilePath = argv[1];
+    std::filesystem::path mapFilePath = argv[1];
+
+    if (!std::filesystem::exists(mapFilePath)) {
+        ShowUsageError(
+            argv[0],
+            QString("File does not exist: %1").arg(QString::fromStdString(mapFilePath.string())));
+        return 1;
+    }
+
+    if (!std::filesystem::is_regular_file(mapFilePath)) {
+        ShowUsageError(argv[0], QString("Path is not a regular file: %1")
+                                    .arg(QString::fromStdString(mapFilePath.string())));
+        return 1;
+    }
+
+    std::string ext = mapFilePath.extension().string();
+    std::transform(ext.begin(), ext.end(), ext.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    if (ext != ".json") {
+        ShowUsageError(argv[0], QString("File must have .json extension: %1")
+                                    .arg(QString::fromStdString(mapFilePath.string())));
+        return 1;
+    }
 
     MainWindow window(mapFilePath);
     window.show();

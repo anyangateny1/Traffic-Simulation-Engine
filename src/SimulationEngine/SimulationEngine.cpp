@@ -5,11 +5,12 @@
 #include "SimulationEngine/SimulationEngine.h"
 #include "Vehicle/Vehicle.h"
 #include "Vehicle/VehicleController.h"
+
 #include <iostream>
 
 SimulationEngine::SimulationEngine() {}
 
-void SimulationEngine::LoadMap(std::string_view filepath) {
+void SimulationEngine::LoadMap(const std::filesystem::path& filepath) {
     if (!MapLoader::LoadMapFromJson(road_graph_, filepath)) {
         std::cerr << "Failed to load map from: " << filepath << "\n";
         throw std::runtime_error("Map loading failed");

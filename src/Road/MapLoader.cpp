@@ -10,8 +10,8 @@
 
 using json = nlohmann::json;
 
-bool MapLoader::LoadMapFromJson(RoadGraph& graph, std::string_view file_path) {
-    std::ifstream input(file_path.data());
+bool MapLoader::LoadMapFromJson(RoadGraph& graph, const std::filesystem::path& file_path) {
+    std::ifstream input(file_path);
     if (!input.is_open()) {
         std::cerr << "error: could not open map file: " << file_path << "\n";
         return false;
@@ -50,11 +50,10 @@ bool MapLoader::LoadMapFromJson(RoadGraph& graph, std::string_view file_path) {
         lane_configs.reserve(lanes_json.size());
         for (const auto& lane_json : lanes_json) {
             int dir_val = lane_json.at("dir").get<int>();
-            lane_configs.emplace_back(LaneConfig{
-                .dir = (dir_val == 1) ? LaneDirection::Forward : LaneDirection::Backward,
-                .offset = lane_json.at("offset_m").get<double>(),
-                .width = lane_json.at("width_m").get<double>()
-            });
+            lane_configs.emplace_back(
+                LaneConfig{.dir = (dir_val == 1) ? LaneDirection::Forward : LaneDirection::Backward,
+                           .offset = lane_json.at("offset_m").get<double>(),
+                           .width = lane_json.at("width_m").get<double>()});
         }
 
         graph.AddRoad(from_id, to_id, distance, std::move(curve_points), lane_configs);

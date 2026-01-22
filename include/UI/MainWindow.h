@@ -1,7 +1,7 @@
 #pragma once
 #include "SimulationEngine/SimState.h"
 #include <QMainWindow>
-#include <QString>
+#include <filesystem>
 
 class SimulationEngine;
 class SimulationController;
@@ -14,7 +14,7 @@ class QTimer;
 class MainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    explicit MainWindow(const QString& mapFilePath, QWidget* parent = nullptr);
+    explicit MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent = nullptr);
     ~MainWindow();
 
   protected:
