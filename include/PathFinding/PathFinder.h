@@ -3,6 +3,10 @@
 #include "Identifiers/IDs.h"
 #include "PathFinding/Path.h"
 
+enum class PathFindingAlgorithm {
+    DIJKSTRA,
+};
+
 class PathFinder {
   public:
     virtual ~PathFinder() = default;
