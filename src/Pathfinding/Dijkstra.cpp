@@ -1,4 +1,4 @@
-#include "Pathfinding/Dijkstra.h"
+#include "PathFinding/Dijkstra.h"
 
 #include <queue>
 

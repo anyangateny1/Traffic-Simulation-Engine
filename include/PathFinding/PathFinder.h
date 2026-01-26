@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Identifiers/IDs.h"
-#include "Pathfinding/Path.h"
+#include "PathFinding/Path.h"
 
-class Pathfinder {
+class PathFinder {
   public:
-    virtual ~Pathfinder() = default;
+    virtual ~PathFinder() = default;
 
     virtual Path FindPath(const NodeID& source, const NodeID& destination) const = 0;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Pathfinding/Path.h"
+#include "PathFinding/Path.h"
 #include "Road/Lane.h"
 #include "Road/Road.h"
 #include "Road/RoadGraph.h"
@@ -25,5 +25,5 @@ class Route {
     const Road* currentRoad_;
     const Lane* currentLane_;
     double distanceAlongRoad_;
-    Position finalPosition_;    // Cached endpoint when route finishes
+    Position finalPosition_; // Cached endpoint when route finishes
 };

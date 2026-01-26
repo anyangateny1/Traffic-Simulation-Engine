@@ -2,7 +2,7 @@
 
 #include "Identifiers/IDs.h"
 #include "Path.h"
-#include "Pathfinder.h"
+#include "PathFinder.h"
 #include "Road/RoadGraph.h"
 
 
@@ -13,7 +13,7 @@ struct QueueNode {
     bool operator>(const QueueNode& other) const { return cost > other.cost; }
 };
 
-class Dijkstra : public Pathfinder {
+class Dijkstra : public PathFinder {
   public:
     explicit Dijkstra(const RoadGraph& graph) : graph_(graph) {};
 

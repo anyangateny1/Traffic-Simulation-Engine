@@ -1,4 +1,4 @@
-#include "Pathfinding/Dijkstra.h"
+#include "PathFinding/Dijkstra.h"
 #include "Road/MapLoader.h"
 #include "Route/Route.h"
 #include "SimulationEngine/SimulationConfig.h"

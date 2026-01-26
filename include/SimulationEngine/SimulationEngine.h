@@ -1,7 +1,7 @@
 #pragma once
 #include "Geometry/Position.h"
 #include "Identifiers/IDs.h"
-#include "Pathfinding/Pathfinder.h"
+#include "PathFinding/PathFinder.h"
 #include "Road/RoadGraph.h"
 #include "SimulationEngine/SimState.h"
 #include "Vehicle/Vehicle.h"
@@ -60,5 +60,5 @@ class SimulationEngine {
 
     SimState state_{SimState::STOPPED};
 
-    std::unique_ptr<Pathfinder> path_finder_;
+    std::unique_ptr<PathFinder> path_finder_;
 };
