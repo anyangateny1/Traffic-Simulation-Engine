@@ -5,6 +5,7 @@
 #include "Road/RoadGraph.h"
 #include "SimulationEngine/SimState.h"
 #include "Vehicle/Vehicle.h"
+#include "Vehicle/VehicleFactory.h"
 #include <filesystem>
 #include <memory>
 #include <vector>
@@ -60,5 +61,6 @@ class SimulationEngine {
 
     SimState state_{SimState::STOPPED};
 
+    std::unique_ptr<VehicleFactory> vehicle_factory_;
     std::unique_ptr<PathFinder> path_finder_;
 };

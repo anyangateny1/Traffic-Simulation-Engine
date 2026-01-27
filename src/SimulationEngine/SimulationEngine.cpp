@@ -1,4 +1,3 @@
-#include "PathFinding/Dijkstra.h"
 #include "Road/MapLoader.h"
 #include "Route/Route.h"
 #include "SimulationEngine/SimulationConfig.h"
@@ -15,18 +14,13 @@ void SimulationEngine::LoadMap(const std::filesystem::path& filepath) {
         std::cerr << "Failed to load map from: " << filepath << "\n";
         throw std::runtime_error("Map loading failed");
     }
-    path_finder_ = std::make_unique<Dijkstra>(road_graph_);
     std::cout << "Successfully loaded map with " << road_graph_.NodeCount() << " nodes\n";
-    SpawnVehicle(NodeID(0), NodeID(7), 30.0);
+    vehicle_factory_ = std::make_unique<VehicleFactory>(road_graph_);
+    vehicles_.emplace_back(vehicle_factory_->CreateCar({NodeID(0), NodeID(10), 30}));
 }
 
 void SimulationEngine::SpawnVehicle(NodeID from, NodeID to, double speed) {
-    Path path = path_finder_->FindPath(from, to);
-    auto route = std::make_unique<Route>(road_graph_, path);
-    auto controller = std::make_unique<VehicleController>(std::move(route), speed);
-    auto vehicle_id = VehicleID(static_cast<VehicleID::value_type>(vehicles_.size()));
-
-    vehicles_.emplace_back(std::make_unique<Vehicle>(vehicle_id, std::move(controller)));
+    // TODO: Reimplement to work and link up with UI
 }
 
 void SimulationEngine::Start() {
