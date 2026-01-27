@@ -25,6 +25,7 @@ class Renderer : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     GLuint lineVAO = 0, lineVBO = 0;
 
     RenderData* renderData_ = nullptr;
+    bool isGLInitialized_ = false;
     
     void updateLineBuffers();
 };

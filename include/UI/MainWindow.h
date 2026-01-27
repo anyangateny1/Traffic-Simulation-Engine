@@ -34,8 +34,7 @@ class MainWindow : public QMainWindow {
     QPushButton* pauseButton_;
     QPushButton* stepButton_;
 
-    SimulationEngine* simulationEngine_;
-    SimulationController* simulationController_;
+    std::unique_ptr<SimulationController> simulationController_;
     Renderer* renderer_;
     QTimer* simulationTimer_;
 };

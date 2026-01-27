@@ -33,17 +33,14 @@ MainWindow::MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent
 
     layout_->addLayout(buttonLayout);
 
-    simulationEngine_ = new SimulationEngine();
-
     try {
-        simulationEngine_->LoadMap(mapFilePath);
+        simulationController_ =
+            std::make_unique<SimulationController>(std::make_unique<SimulationEngine>(), mapFilePath);
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Map Loading Error",
                               QString("Failed to load map: %1").arg(e.what()));
         throw;
     }
-
-    simulationController_ = new SimulationController(*simulationEngine_);
 
     renderer_ = new Renderer(this);
     layout_->addWidget(renderer_);
@@ -56,8 +53,12 @@ MainWindow::MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent
     connect(stepButton_, &QPushButton::clicked, this, &MainWindow::onStepClicked);
 
     connect(simulationTimer_, &QTimer::timeout, this, &MainWindow::onSimulationTick);
-    connect(simulationController_, &SimulationController::stateChanged, this,
+    connect(simulationController_.get(), &SimulationController::stateChanged, this,
             &MainWindow::onSimulationStateChanged);
+    connect(simulationController_.get(), &SimulationController::renderDataUpdated, renderer_,
+            &Renderer::updateFromRenderData);
+
+    simulationController_->emitInitialRenderData();
 
     setWindowTitle("Traffic Simulation");
     resize(800, 600);
@@ -65,17 +66,9 @@ MainWindow::MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent
 
 void MainWindow::showEvent(QShowEvent* event) {
     QMainWindow::showEvent(event);
-    static bool firstShow = true;
-    if (firstShow) {
-        firstShow = false;
-        renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
-    }
 }
 
-MainWindow::~MainWindow() {
-    delete simulationController_;
-    delete simulationEngine_;
-}
+MainWindow::~MainWindow() {}
 
 void MainWindow::onStartClicked() {
     simulationController_->start();
@@ -87,12 +80,10 @@ void MainWindow::onPauseClicked() {
 
 void MainWindow::onStepClicked() {
     simulationController_->step();
-    renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
 }
 
 void MainWindow::onSimulationTick() {
     simulationController_->step();
-    renderer_->updateFromRenderData(simulationEngine_->GetRenderData());
 }
 
 void MainWindow::onSimulationStateChanged(SimState state) {

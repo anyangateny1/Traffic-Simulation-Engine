@@ -4,15 +4,15 @@
 
 // 2D square vertices (centered at origin, 1x1 size)
 const float squareVertices[] = {
-    -0.5f, -0.5f,  // bottom-left
-     0.5f, -0.5f,  // bottom-right
-     0.5f,  0.5f,  // top-right
-    -0.5f,  0.5f   // top-left
+    -0.5f, -0.5f, // bottom-left
+    0.5f,  -0.5f, // bottom-right
+    0.5f,  0.5f,  // top-right
+    -0.5f, 0.5f   // top-left
 };
 
 const unsigned int squareIndices[] = {
-    0, 1, 2,  // first triangle
-    2, 3, 0   // second triangle
+    0, 1, 2, // first triangle
+    2, 3, 0  // second triangle
 };
 
 Renderer::Renderer(QWidget* parent) : QOpenGLWidget(parent) {}
@@ -72,6 +72,12 @@ void Renderer::initializeGL() {
     // Setup line VAO/VBO
     glGenVertexArrays(1, &lineVAO);
     glGenBuffers(1, &lineVBO);
+
+    isGLInitialized_ = true;
+
+    if (renderData_) {
+        updateLineBuffers();
+    }
 }
 
 void Renderer::resizeGL(int w, int h) {
@@ -79,9 +85,10 @@ void Renderer::resizeGL(int w, int h) {
 }
 
 void Renderer::updateLineBuffers() {
-    if (!renderData_)
+    if (!renderData_ || !isGLInitialized_)
         return;
 
+    makeCurrent();
     std::vector<float> lineVertices;
 
     for (const auto& roadInfo : renderData_->roads) {
@@ -162,15 +169,13 @@ void Renderer::paintGL() {
         float centerX = (minX + maxX) / 2.0f;
         float halfHeight = sceneHeight / 2.0f;
         float halfWidth = halfHeight * aspectRatio;
-        projection.ortho(centerX - halfWidth, centerX + halfWidth,
-                        minY, maxY, -1.0f, 1.0f);
+        projection.ortho(centerX - halfWidth, centerX + halfWidth, minY, maxY, -1.0f, 1.0f);
     } else {
         // Window is taller than scene - fit to width
         float centerY = (minY + maxY) / 2.0f;
         float halfWidth = sceneWidth / 2.0f;
         float halfHeight = halfWidth / aspectRatio;
-        projection.ortho(minX, maxX,
-                        centerY - halfHeight, centerY + halfHeight, -1.0f, 1.0f);
+        projection.ortho(minX, maxX, centerY - halfHeight, centerY + halfHeight, -1.0f, 1.0f);
     }
 
     shaderProgram->setUniformValue("projection", projection);
