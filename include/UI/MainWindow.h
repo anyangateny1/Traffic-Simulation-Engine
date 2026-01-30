@@ -33,6 +33,7 @@ class MainWindow : public QMainWindow {
     QPushButton* startButton_;
     QPushButton* pauseButton_;
     QPushButton* stepButton_;
+    QPushButton* spawnVehicleButton;
 
     std::unique_ptr<SimulationController> simulationController_;
     Renderer* renderer_;

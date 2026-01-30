@@ -20,15 +20,20 @@ MainWindow::MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent
 
     QHBoxLayout* buttonLayout = new QHBoxLayout();
 
-    startButton_ = new QPushButton("Start", this);
-    pauseButton_ = new QPushButton("Pause", this);
-    stepButton_ = new QPushButton("Step", this);
+    auto makeButton = [this](const QString& text) { return new QPushButton(text, this); };
+
+    startButton_ = makeButton("Start");
+    pauseButton_ = makeButton("Pause");
+    stepButton_ = makeButton("Step");
+    spawnVehicleButton = makeButton("Spawn Vehicle");
 
     pauseButton_->setEnabled(false);
 
     buttonLayout->addWidget(startButton_);
     buttonLayout->addWidget(pauseButton_);
     buttonLayout->addWidget(stepButton_);
+    buttonLayout->addWidget(spawnVehicleButton);
+
     buttonLayout->addStretch();
 
     layout_->addLayout(buttonLayout);
