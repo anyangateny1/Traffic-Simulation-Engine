@@ -1,6 +1,7 @@
 #include "Renderer/Renderer.h"
 #include "SimulationEngine/SimulationEngine.h"
 #include <QMatrix4x4>
+#include <QPainter>
 
 // 2D square vertices (centered at origin, 1x1 size)
 const float squareVertices[] = {
@@ -224,6 +225,48 @@ void Renderer::paintGL() {
 
     glBindVertexArray(0);
     shaderProgram->release();
+
+    drawNodeLabels(projection);
+}
+
+void Renderer::drawNodeLabels(const QMatrix4x4& projection) {
+    if (!renderData_ || renderData_->nodes.empty()) {
+        return;
+    }
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+
+    QFont font = painter.font();
+    font.setPointSize(10);
+    font.setBold(true);
+    painter.setFont(font);
+    painter.setPen(Qt::white);
+
+    const int viewportWidth = width();
+    const int viewportHeight = height();
+
+    for (const auto& nodeInfo : renderData_->nodes) {
+        QVector4D worldPos(nodeInfo.pos.x_coord, nodeInfo.pos.y_coord, 0.0f, 1.0f);
+        QVector4D clipPos = projection * worldPos;
+
+        float screenX = (clipPos.x() + 1.0f) * 0.5f * viewportWidth;
+        float screenY = (1.0f - clipPos.y()) * 0.5f * viewportHeight;
+
+        QString idText = QString::number(nodeInfo.id.value());
+        QFontMetrics fm(font);
+        int textWidth = fm.horizontalAdvance(idText);
+        int textHeight = fm.height();
+
+        int offsetX = 10;
+        int offsetY = -12;
+
+        painter.drawText(static_cast<int>(screenX - textWidth / 2 + offsetX),
+                         static_cast<int>(screenY + textHeight / 4 + offsetY), idText);
+    }
+
+    painter.end();
 }
 
 void Renderer::updateFromRenderData(const RenderData& data) {

@@ -28,4 +28,5 @@ class Renderer : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     bool isGLInitialized_ = false;
     
     void updateLineBuffers();
+    void drawNodeLabels(const QMatrix4x4& projection);
 };
