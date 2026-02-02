@@ -8,6 +8,7 @@
 #include "Vehicle/VehicleFactory.h"
 #include <filesystem>
 #include <memory>
+#include <span>
 #include <vector>
 
 struct RenderData {
@@ -54,6 +55,7 @@ class SimulationEngine {
     bool SetState(SimState new_state) noexcept;
 
     const std::vector<std::unique_ptr<Vehicle>>& getVehicles() const noexcept;
+    std::span<const Node> GetNodes() const noexcept { return road_graph_.GetNodes(); }
 
   private:
     RoadGraph road_graph_;

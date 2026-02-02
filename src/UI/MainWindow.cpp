@@ -3,6 +3,7 @@
 #include "SimulationEngine/SimulationController.h"
 #include "SimulationEngine/SimulationEngine.h"
 #include "UI/MainWindow.h"
+#include "UI/SpawnVehicleWindow.h"
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QPushButton>
@@ -11,6 +12,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <filesystem>
+
 
 MainWindow::MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent)
     : QMainWindow(parent) {
@@ -25,22 +27,22 @@ MainWindow::MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent
     startButton_ = makeButton("Start");
     pauseButton_ = makeButton("Pause");
     stepButton_ = makeButton("Step");
-    spawnVehicleButton = makeButton("Spawn Vehicle");
+    spawnVehicleButton_ = makeButton("Spawn Vehicle");
 
     pauseButton_->setEnabled(false);
 
     buttonLayout->addWidget(startButton_);
     buttonLayout->addWidget(pauseButton_);
     buttonLayout->addWidget(stepButton_);
-    buttonLayout->addWidget(spawnVehicleButton);
+    buttonLayout->addWidget(spawnVehicleButton_);
 
     buttonLayout->addStretch();
 
     layout_->addLayout(buttonLayout);
 
     try {
-        simulationController_ =
-            std::make_unique<SimulationController>(std::make_unique<SimulationEngine>(), mapFilePath);
+        simulationController_ = std::make_unique<SimulationController>(
+            std::make_unique<SimulationEngine>(), mapFilePath);
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Map Loading Error",
                               QString("Failed to load map: %1").arg(e.what()));
@@ -56,6 +58,7 @@ MainWindow::MainWindow(const std::filesystem::path& mapFilePath, QWidget* parent
     connect(startButton_, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(pauseButton_, &QPushButton::clicked, this, &MainWindow::onPauseClicked);
     connect(stepButton_, &QPushButton::clicked, this, &MainWindow::onStepClicked);
+    connect(spawnVehicleButton_, &QPushButton::clicked, this, &MainWindow::onSpawnVehicleClicked);
 
     connect(simulationTimer_, &QTimer::timeout, this, &MainWindow::onSimulationTick);
     connect(simulationController_.get(), &SimulationController::stateChanged, this,
@@ -89,6 +92,13 @@ void MainWindow::onStepClicked() {
 
 void MainWindow::onSimulationTick() {
     simulationController_->step();
+}
+
+void MainWindow::onSpawnVehicleClicked() {
+    SpawnVehicleWindow dialog(simulationController_->getNodes(), this);
+    if (dialog.exec() == QDialog::Accepted) {
+        // TODO: Return a struct of VehicleInfo from Dialog and then use factory to create vehicle
+    }
 }
 
 void MainWindow::onSimulationStateChanged(SimState state) {

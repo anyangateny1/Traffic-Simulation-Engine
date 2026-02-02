@@ -4,8 +4,10 @@
 #include <QObject>
 #include <filesystem>
 #include <memory>
+#include <span>
 
 class SimulationEngine;
+class Node;
 
 class SimulationController : public QObject {
     Q_OBJECT
@@ -17,6 +19,8 @@ class SimulationController : public QObject {
     void pause();
     void step();
     void emitInitialRenderData();
+    
+    std::span<const Node> getNodes() const;
 
   signals:
     void stateChanged(SimState state);

@@ -1,5 +1,7 @@
 #pragma once
 #include "SimulationEngine/SimState.h"
+#include "UI/SpawnVehicleWindow.h"
+
 #include <QMainWindow>
 #include <filesystem>
 
@@ -21,9 +23,12 @@ class MainWindow : public QMainWindow {
     void showEvent(QShowEvent* event) override;
 
   private slots:
+
     void onStartClicked();
     void onPauseClicked();
     void onStepClicked();
+    void onSpawnVehicleClicked();
+
     void onSimulationTick();
     void onSimulationStateChanged(SimState state);
 
@@ -33,7 +38,7 @@ class MainWindow : public QMainWindow {
     QPushButton* startButton_;
     QPushButton* pauseButton_;
     QPushButton* stepButton_;
-    QPushButton* spawnVehicleButton;
+    QPushButton* spawnVehicleButton_;
 
     std::unique_ptr<SimulationController> simulationController_;
     Renderer* renderer_;
