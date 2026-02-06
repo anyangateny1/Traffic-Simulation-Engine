@@ -4,6 +4,7 @@
 #include "SimulationEngine/SimulationEngine.h"
 #include "UI/MainWindow.h"
 #include "UI/SpawnVehicleWindow.h"
+#include "Vehicle/VehicleInfo.h"
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QPushButton>
@@ -97,7 +98,14 @@ void MainWindow::onSimulationTick() {
 void MainWindow::onSpawnVehicleClicked() {
     SpawnVehicleWindow dialog(simulationController_->getNodes(), this);
     if (dialog.exec() == QDialog::Accepted) {
-        // TODO: Return a struct of VehicleInfo from Dialog and then use factory to create vehicle
+        VehicleInfo info = dialog.getVehicleParameters();
+        try {
+            simulationController_->spawnVehicle(info);
+        } catch (...) {
+            // TODO: implement actual catching for things mainwindow can handle here
+            QMessageBox::critical(this, "Unexpected error",
+                                  "Failed to spawn vehicle due to an unexpected error.");
+        }
     }
 }
 

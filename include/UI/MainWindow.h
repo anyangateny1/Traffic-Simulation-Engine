@@ -1,6 +1,5 @@
 #pragma once
 #include "SimulationEngine/SimState.h"
-#include "UI/SpawnVehicleWindow.h"
 
 #include <QMainWindow>
 #include <filesystem>

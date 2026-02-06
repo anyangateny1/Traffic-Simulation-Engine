@@ -19,7 +19,9 @@ class SimulationController : public QObject {
     void pause();
     void step();
     void emitInitialRenderData();
-    
+
+    void spawnVehicle(const VehicleInfo& info);
+
     std::span<const Node> getNodes() const;
 
   signals:

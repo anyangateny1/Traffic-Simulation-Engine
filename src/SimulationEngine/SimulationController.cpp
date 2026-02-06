@@ -1,6 +1,6 @@
+#include "Road/Node.h"
 #include "SimulationEngine/SimulationController.h"
 #include "SimulationEngine/SimulationEngine.h"
-#include "Road/Node.h"
 
 SimulationController::SimulationController(std::unique_ptr<SimulationEngine> engine,
                                            const std::filesystem::path& mapFilePath)
@@ -29,6 +29,12 @@ void SimulationController::step() {
 }
 
 void SimulationController::emitInitialRenderData() {
+    emit renderDataUpdated(engine_->GetRenderData());
+}
+
+void SimulationController::spawnVehicle(const VehicleInfo& info) {
+    engine_->SpawnVehicle(info);
+
     emit renderDataUpdated(engine_->GetRenderData());
 }
 

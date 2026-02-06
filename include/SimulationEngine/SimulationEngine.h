@@ -47,7 +47,7 @@ class SimulationEngine {
     void Step();
 
     // Spawn a vehicle on a specific road between two nodes
-    void SpawnVehicle(NodeID from, NodeID to, double speed = 5.0);
+    void SpawnVehicle(const VehicleInfo& info);
 
     RenderData GetRenderData() const;
 

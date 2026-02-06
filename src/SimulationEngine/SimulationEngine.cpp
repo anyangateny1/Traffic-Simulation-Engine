@@ -16,11 +16,13 @@ void SimulationEngine::LoadMap(const std::filesystem::path& filepath) {
     }
     std::cout << "Successfully loaded map with " << road_graph_.NodeCount() << " nodes\n";
     vehicle_factory_ = std::make_unique<VehicleFactory>(road_graph_);
-    vehicles_.emplace_back(vehicle_factory_->CreateCar({NodeID(0), NodeID(10), 30}));
 }
 
-void SimulationEngine::SpawnVehicle(NodeID from, NodeID to, double speed) {
-    // TODO: Reimplement to work and link up with UI
+void SimulationEngine::SpawnVehicle(const VehicleInfo& info) {
+    auto vehicle = vehicle_factory_->CreateCar(info);
+    if (vehicle) {
+        vehicles_.push_back(std::move(vehicle));
+    }
 }
 
 void SimulationEngine::Start() {

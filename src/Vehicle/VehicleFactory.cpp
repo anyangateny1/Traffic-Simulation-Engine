@@ -9,6 +9,10 @@ std::unique_ptr<Vehicle> VehicleFactory::CreateCar(const VehicleInfo& vehicle_in
                                                    const PathFindingAlgorithm path_algorithm) {
     auto& [from_id, to_id, speed] = vehicle_info;
 
+    if (from_id == to_id) {
+        return nullptr;
+    }
+
     std::unique_ptr<PathFinder> path_finder = CreatePathFinder(path_algorithm);
     Path path = path_finder->FindPath(from_id, to_id);
     std::unique_ptr<Route> route = ConstructRoute(road_graph_, path);
