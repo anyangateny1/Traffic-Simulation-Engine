@@ -25,8 +25,11 @@ class Renderer : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     GLuint lineVAO = 0, lineVBO = 0;
 
     RenderData* renderData_ = nullptr;
-    bool isGLInitialized_ = false;
-    
+
     void updateLineBuffers();
     void drawNodeLabels(const QMatrix4x4& projection);
+
+    int roadVertexCount_{0};
+
+    bool isGLInitialized_ = false;
 };

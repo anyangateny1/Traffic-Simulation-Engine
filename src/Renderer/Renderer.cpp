@@ -90,40 +90,61 @@ void Renderer::updateLineBuffers() {
         return;
 
     makeCurrent();
-    std::vector<float> lineVertices;
+    std::vector<float> vertices;
 
-    for (const auto& roadInfo : renderData_->roads) {
-        const RenderData::NodeRenderInfo* fromNode = nullptr;
-        const RenderData::NodeRenderInfo* toNode = nullptr;
+    const float roadWidth = 3.0f;
 
-        for (const auto& node : renderData_->nodes) {
-            if (node.id == roadInfo.from_id)
-                fromNode = &node;
-            if (node.id == roadInfo.to_id)
-                toNode = &node;
-        }
+    for (const auto& road : renderData_->roads) {
+        std::vector<QVector2D> points;
 
-        if (fromNode && toNode) {
-            // Start point
-            lineVertices.push_back(fromNode->pos.x_coord);
-            lineVertices.push_back(fromNode->pos.y_coord);
+        // collect points
+        auto getNode = [&](auto id) {
+            for (auto& n : renderData_->nodes)
+                if (n.id == id)
+                    return &n;
+            return (RenderData::NodeRenderInfo*)nullptr;
+        };
 
-            // Curve points
-            for (const auto& point : roadInfo.curve_points) {
-                lineVertices.push_back(point.x_coord);
-                lineVertices.push_back(point.y_coord);
-            }
+        auto* from = getNode(road.from_id);
+        auto* to = getNode(road.to_id);
 
-            // End point
-            lineVertices.push_back(toNode->pos.x_coord);
-            lineVertices.push_back(toNode->pos.y_coord);
+        if (!from || !to)
+            continue;
+
+        points.emplace_back(from->pos.x_coord, from->pos.y_coord);
+        for (auto& p : road.curve_points)
+            points.emplace_back(p.x_coord, p.y_coord);
+        points.emplace_back(to->pos.x_coord, to->pos.y_coord);
+
+        // build rectangles
+        for (size_t i = 0; i + 1 < points.size(); ++i) {
+            QVector2D A = points[i];
+            QVector2D B = points[i + 1];
+
+            QVector2D dir = (B - A).normalized();
+            QVector2D normal(-dir.y(), dir.x());
+            normal *= roadWidth * 0.5f;
+
+            QVector2D A_L = A + normal;
+            QVector2D A_R = A - normal;
+            QVector2D B_L = B + normal;
+            QVector2D B_R = B - normal;
+
+            // triangle 1
+            vertices.insert(vertices.end(), {A_L.x(), A_L.y(), B_L.x(), B_L.y(), B_R.x(), B_R.y()});
+
+            // triangle 2
+            vertices.insert(vertices.end(), {A_L.x(), A_L.y(), B_R.x(), B_R.y(), A_R.x(), A_R.y()});
         }
     }
 
+    roadVertexCount_ = static_cast<int>(vertices.size() / 2);
+
     glBindVertexArray(lineVAO);
     glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-    glBufferData(GL_ARRAY_BUFFER, lineVertices.size() * sizeof(float), lineVertices.data(),
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(),
                  GL_DYNAMIC_DRAW);
+
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
@@ -181,22 +202,14 @@ void Renderer::paintGL() {
 
     shaderProgram->setUniformValue("projection", projection);
 
-    // Draw roads as thick lines
-    glLineWidth(4.0f);
-    shaderProgram->setUniformValue("color", QVector3D(0.6f, 0.6f, 0.6f));
+
+    shaderProgram->setUniformValue("color", QVector3D(0.25f, 0.25f, 0.25f));
+
     QMatrix4x4 identity;
     shaderProgram->setUniformValue("model", identity);
 
     glBindVertexArray(lineVAO);
-
-    // Draw each road as a line strip
-    int vertexOffset = 0;
-    for (const auto& roadInfo : renderData_->roads) {
-        int pointCount = 2 + roadInfo.curve_points.size();
-        glDrawArrays(GL_LINE_STRIP, vertexOffset, pointCount);
-        vertexOffset += pointCount;
-    }
-
+    glDrawArrays(GL_TRIANGLES, 0, roadVertexCount_);
     glBindVertexArray(0);
 
     // Draw nodes as small squares
