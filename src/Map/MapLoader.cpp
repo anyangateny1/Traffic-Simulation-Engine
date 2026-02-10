@@ -1,7 +1,7 @@
 #include "Geometry/Position.h"
 #include "Identifiers/IDs.h"
+#include "Map/MapLoader.h"
 #include "Road/Lane.h"
-#include "Road/MapLoader.h"
 #include "Road/RoadGraph.h"
 
 #include <fstream>
