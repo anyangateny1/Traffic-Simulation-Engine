@@ -28,3 +28,7 @@ inline Position operator-(const Position& a, const Position& b) noexcept {
 inline Position operator*(const Position& p, double scalar) noexcept {
     return {p.x_coord * scalar, p.y_coord * scalar};
 }
+
+inline double cross(const Position& a, const Position& b) noexcept {
+    return a.x_coord * b.y_coord - a.y_coord * b.x_coord;
+}

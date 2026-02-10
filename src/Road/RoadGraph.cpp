@@ -45,6 +45,9 @@ void RoadGraph::AddRoad(NodeID from_id,
     const Node& from_node = NodeById(from_id);
     const Node& to_node = NodeById(to_id);
 
+    curve_points.emplace_back(from_node.Pos());
+    curve_points.emplace_back(to_node.Pos());
+
     auto road_id = RoadID(static_cast<RoadID::value_type>(roads_.size()));
     roads_[road_id] = std::make_unique<Road>(road_id, from_node.Pos(), to_node.Pos(), true_distance,
                                              std::move(curve_points), lane_configs);
