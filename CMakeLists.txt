@@ -26,5 +26,16 @@ add_subdirectory(src)
 # # -------------------------------
 # # Add tests
 # # -------------------------------
-# enable_testing()
-# add_subdirectory(tests)
+
+include(FetchContent)
+
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG v3.5.4   # Use latest stable if needed
+)
+
+FetchContent_MakeAvailable(Catch2)
+
+enable_testing()
+add_subdirectory(tests)

@@ -1,28 +1,52 @@
-# Recursively grab all .cpp files
-file(GLOB_RECURSE SOURCES "*.cpp")
+file(GLOB_RECURSE LIB_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
 
-# Recursively grab all .h files from include directory
-file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../include/*.h")
+list(REMOVE_ITEM LIB_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
+)
 
-# Create library (include headers so AUTOMOC can process them)
-add_library(TrafficSimLib ${SOURCES} ${HEADERS})
+file(GLOB_RECURSE HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include/*.h"
+)
 
-# Include headers from separate include folder
-target_include_directories(TrafficSimLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+# Create library
+add_library(TrafficSimLib ${LIB_SOURCES} ${HEADERS})
 
-# Link Qt modules
-target_link_libraries(TrafficSimLib PRIVATE Qt6::Core Qt6::Widgets Qt6::Gui Qt6::OpenGL Qt6::OpenGLWidgets nlohmann_json::nlohmann_json)
+target_include_directories(TrafficSimLib
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
+)
 
-# Enable Qt features
+target_link_libraries(TrafficSimLib
+    PRIVATE
+    Qt6::Core
+    Qt6::Widgets
+    Qt6::Gui
+    Qt6::OpenGL
+    Qt6::OpenGLWidgets
+    nlohmann_json::nlohmann_json
+)
+
 set_target_properties(TrafficSimLib PROPERTIES
     AUTOMOC ON
     AUTOUIC ON
     AUTORCC ON
 )
 
-# -------------------------------
-# Add executable
-# -------------------------------
 add_executable(TrafficSimApp main.cpp)
-target_link_libraries(TrafficSimApp PRIVATE TrafficSimLib Qt6::Core Qt6::Widgets Qt6::Gui Qt6::OpenGL Qt6::OpenGLWidgets)
-target_include_directories(TrafficSimApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+target_link_libraries(TrafficSimApp
+    PRIVATE
+    TrafficSimLib
+    Qt6::Core
+    Qt6::Widgets
+    Qt6::Gui
+    Qt6::OpenGL
+    Qt6::OpenGLWidgets
+)
+
+target_include_directories(TrafficSimApp
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
+)
