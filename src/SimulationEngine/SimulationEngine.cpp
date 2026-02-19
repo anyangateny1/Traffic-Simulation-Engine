@@ -1,3 +1,4 @@
+#include "Map/IntersectionFinder.h"
 #include "Map/MapLoader.h"
 #include "Route/Route.h"
 #include "SimulationEngine/SimulationConfig.h"
@@ -14,7 +15,12 @@ void SimulationEngine::LoadMap(const std::filesystem::path& filepath) {
         std::cerr << "Failed to load map from: " << filepath << "\n";
         throw std::runtime_error("Map loading failed");
     }
-    std::cout << "Successfully loaded map with " << road_graph_.NodeCount() << " nodes\n";
+
+    auto intersections = IntersectionFinder::FindIntersections(road_graph_);
+    road_graph_.AddIntersections(std::move(intersections));
+
+    std::cout << "Successfully loaded map with " << road_graph_.NodeCount() << " nodes and "
+              << road_graph_.GetIntersections().size() << " intersections\n";
     vehicle_factory_ = std::make_unique<VehicleFactory>(road_graph_);
 }
 
@@ -69,6 +75,12 @@ RenderData SimulationEngine::GetRenderData() const {
             data.roads.push_back(
                 {from_node_id, edge.to_node_id, road.CurvePoints(), road.Length()});
         }
+    }
+
+    const auto& intersections = road_graph_.GetIntersections();
+
+    for (const auto& intersect : intersections) {
+        data.intersections.push_back({intersect.intersecting_roads, intersect.pos});
     }
 
     return data;

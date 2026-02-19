@@ -229,7 +229,7 @@ void Renderer::paintGL() {
     for (const auto& vehicleInfo : renderData_->vehicles) {
         QMatrix4x4 model;
         model.translate(vehicleInfo.pos.x_coord, vehicleInfo.pos.y_coord);
-        model.scale(1.2f);
+        model.scale(2.5f);
         shaderProgram->setUniformValue("model", model);
 
         glBindVertexArray(VAO);

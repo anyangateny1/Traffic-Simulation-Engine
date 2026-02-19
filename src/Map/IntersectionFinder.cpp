@@ -1,6 +1,6 @@
 #include "Map/IntersectionFinder.h"
 
-IntersectionFinder::IntersectionFinder() {}
+#include <algorithm>
 
 std::optional<Position> IntersectionFinder::SegmentIntersectionPoint(const Position& A,
                                                                      const Position& B,
@@ -27,19 +27,45 @@ std::optional<Position> IntersectionFinder::SegmentIntersectionPoint(const Posit
     return A + AB * t;
 }
 
-std::vector<RoadIntersection> IntersectionFinder::FindIntersections(const RoadGraph& graph) {
-    constexpr double EPS = 1e-9;
+std::vector<RoadIntersection>
+IntersectionFinder::MergeHits(const std::vector<PairwiseHit>& hits) {
+    constexpr double MERGE_EPS = 1e-6;
 
     std::vector<RoadIntersection> result;
 
+    for (const auto& hit : hits) {
+        RoadIntersection* existing = nullptr;
+        for (auto& ri : result) {
+            if ((ri.pos - hit.pos).magnitude_squared() < MERGE_EPS * MERGE_EPS) {
+                existing = &ri;
+                break;
+            }
+        }
+
+        if (existing) {
+            auto& ids = existing->intersecting_roads;
+            if (std::find(ids.begin(), ids.end(), hit.road_a) == ids.end())
+                ids.push_back(hit.road_a);
+            if (std::find(ids.begin(), ids.end(), hit.road_b) == ids.end())
+                ids.push_back(hit.road_b);
+        } else {
+            result.push_back(RoadIntersection{{hit.road_a, hit.road_b}, hit.pos});
+        }
+    }
+
+    return result;
+}
+
+std::vector<RoadIntersection> IntersectionFinder::FindIntersections(const RoadGraph& graph) {
     const auto& roads_map = graph.GetRoads();
 
-    // Flatten map to vector
     std::vector<const Road*> roads;
     roads.reserve(roads_map.size());
 
     for (const auto& [id, road_ptr] : roads_map)
         roads.push_back(road_ptr.get());
+
+    std::vector<PairwiseHit> hits;
 
     for (size_t i = 0; i < roads.size(); ++i) {
         for (size_t j = i + 1; j < roads.size(); ++j) {
@@ -52,19 +78,18 @@ std::vector<RoadIntersection> IntersectionFinder::FindIntersections(const RoadGr
             if (curveA.size() < 2 || curveB.size() < 2)
                 continue;
 
-            // Segment pair loop
             for (size_t a = 0; a + 1 < curveA.size(); ++a) {
                 for (size_t b = 0; b + 1 < curveB.size(); ++b) {
                     auto intersection = SegmentIntersectionPoint(curveA[a], curveA[a + 1],
                                                                  curveB[b], curveB[b + 1]);
 
                     if (intersection) {
-                        result.push_back(RoadIntersection{roadA->Id(), roadB->Id(), *intersection});
+                        hits.push_back({roadA->Id(), roadB->Id(), *intersection});
                     }
                 }
             }
         }
     }
 
-    return result;
+    return MergeHits(hits);
 }

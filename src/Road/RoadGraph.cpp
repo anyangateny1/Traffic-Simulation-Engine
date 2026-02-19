@@ -1,5 +1,6 @@
 #include "Identifiers/IDs.h"
 #include "Road/RoadGraph.h"
+#include "Road/RoadIntersection.h"
 #include <memory>
 #include <span>
 #include <stdexcept>
@@ -54,4 +55,8 @@ void RoadGraph::AddRoad(NodeID from_id,
 
     adjacency_[from_id].emplace_back(to_id, road_id);
     adjacency_[to_id].emplace_back(from_id, road_id);
+}
+
+void RoadGraph::AddIntersections(std::vector<RoadIntersection>&& intersections) {
+    intersections_ = std::move(intersections);
 }

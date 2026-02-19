@@ -2,9 +2,9 @@
 
 #include "Geometry/Position.h"
 #include "Identifiers/IDs.h"
+#include <vector>
 
 struct RoadIntersection {
-    RoadID a;
-    RoadID b;
+    std::vector<RoadID> intersecting_roads;
     Position pos;
 };

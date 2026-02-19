@@ -28,9 +28,15 @@ struct RenderData {
         Position pos;
     };
 
+    struct IntersectionRenderInfo {
+        std::vector<RoadID> intersecting_roads;
+        Position pos;
+    };
+
     std::vector<VehicleRenderInfo> vehicles;
     std::vector<RoadRenderInfo> roads;
     std::vector<NodeRenderInfo> nodes;
+    std::vector<IntersectionRenderInfo> intersections;
 };
 
 class SimulationEngine {
